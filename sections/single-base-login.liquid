@@ -1,0 +1,246 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% render 'single-base-login-form' %}
+
+{% schema %}
+{
+  "locales": {
+    "en": {
+      "single": {
+        "login": {
+          "title": "Log In",
+          "email": "Email",
+          "password": "Password",
+          "sign_in": "Sign In",
+          "forgot_password": "Reset Password",
+          "create_account": "Create Account"
+        },
+        "alert": {
+          "error_heading": "There was an error",
+          "reset_success": "A reset email will be delivered to your inbox."
+        },
+        "recover_password": {
+          "title": "Reset Your Password",
+          "subtext": "We will send you an email to reset your password.",
+          "submit": "Submit",
+          "cancel": "Cancel"
+        },
+        "register": {
+          "title": "Create Account",
+          "marketing": "Subscribe to email marketing",
+          "first_name": "First Name",
+          "last_name": "Last Name"
+        },
+        "collection": {
+          "title": "Need Access?"
+        }
+      }
+    },
+    "es": {
+      "single": {
+        "login": {
+          "title": "Iniciar Sesión",
+          "email": "Correo Electrónico",
+          "password": "Contraseña",
+          "sign_in": "Entrar",
+          "forgot_password": "Restablecer Contraseña",
+          "create_account": "Crear Cuenta"
+        },
+        "alert": {
+          "error_heading": "Hubo un error",
+          "reset_success": "Un correo para restablecer tu contraseña será enviado a tu bandeja de entrada."
+        },
+        "recover_password": {
+          "title": "Restablece Tu Contraseña",
+          "subtext": "Te enviaremos un correo para restablecer tu contraseña.",
+          "submit": "Enviar",
+          "cancel": "Cancelar"
+        },
+        "register": {
+          "title": "Crear Cuenta",
+          "marketing": "Suscribirse al marketing por correo electrónico",
+          "first_name": "Nombre",
+          "last_name": "Apellido"
+        },
+        "collection": {
+          "title": "¿Necesitas acceso?"
+        }
+      }
+    },
+    "fr": {
+      "single": {
+        "login": {
+          "title": "Se Connecter",
+          "email": "Email",
+          "password": "Mot de Passe",
+          "sign_in": "Connexion",
+          "forgot_password": "Réinitialiser le Mot de Passe",
+          "create_account": "Créer un Compte"
+        },
+        "alert": {
+          "error_heading": "Une erreur s'est produite",
+          "reset_success": "Un e-mail de réinitialisation sera envoyé à votre boîte de réception."
+        },
+        "recover_password": {
+          "title": "Réinitialisez Votre Mot de Passe",
+          "subtext": "Nous vous enverrons un e-mail pour réinitialiser votre mot de passe.",
+          "submit": "Soumettre",
+          "cancel": "Annuler"
+        },
+        "register": {
+          "title": "Créer un Compte",
+          "marketing": "S'abonner au marketing par e-mail",
+          "first_name": "Prénom",
+          "last_name": "Nom de Famille"
+        },
+        "collection": {
+          "title": "Besoin d'accès?"
+        }
+      }
+    },
+    "de": {
+      "single": {
+        "login": {
+          "title": "Anmelden",
+          "email": "E-Mail",
+          "password": "Passwort",
+          "sign_in": "Einloggen",
+          "forgot_password": "Passwort zurücksetzen",
+          "create_account": "Konto erstellen"
+        },
+        "alert": {
+          "error_heading": "Es gab einen Fehler",
+          "reset_success": "Eine E-Mail zum Zurücksetzen wird an Ihren Posteingang gesendet."
+        },
+        "recover_password": {
+          "title": "Passwort zurücksetzen",
+          "subtext": "Wir senden Ihnen eine E-Mail zum Zurücksetzen Ihres Passworts.",
+          "submit": "Absenden",
+          "cancel": "Abbrechen"
+        },
+        "register": {
+          "title": "Konto erstellen",
+          "marketing": "Für E-Mail-Marketing anmelden",
+          "first_name": "Vorname",
+          "last_name": "Nachname"
+        },
+        "collection": {
+          "title": "Brauchen Sie Zugang?"
+        }
+      }
+    },
+    "it": {
+      "single": {
+        "login": {
+          "title": "Accedi",
+          "email": "Email",
+          "password": "Password",
+          "sign_in": "Entra",
+          "forgot_password": "Reimposta Password",
+          "create_account": "Crea Account"
+        },
+        "alert": {
+          "error_heading": "Si è verificato un errore",
+          "reset_success": "Un'email di reimpostazione verrà inviata alla tua casella di posta."
+        },
+        "recover_password": {
+          "title": "Reimposta La Tua Password",
+          "subtext": "Ti invieremo un'email per reimpostare la tua password.",
+          "submit": "Invia",
+          "cancel": "Annulla"
+        },
+        "register": {
+          "title": "Crea Account",
+          "marketing": "Iscriviti al marketing via email",
+          "first_name": "Nome",
+          "last_name": "Cognome"
+        },
+        "collection": {
+          "title": "Hai bisogno di accesso?"
+        }
+      }
+    },
+    "ja": {
+      "single": {
+        "login": {
+          "title": "ログイン",
+          "email": "メール",
+          "password": "パスワード",
+          "sign_in": "サインイン",
+          "forgot_password": "パスワードをリセット",
+          "create_account": "アカウント作成"
+        },
+        "alert": {
+          "error_heading": "エラーが発生しました",
+          "reset_success": "リセット用のメールが受信トレイに送信されます。"
+        },
+        "recover_password": {
+          "title": "パスワードをリセット",
+          "subtext": "パスワードをリセットするためのメールを送信します。",
+          "submit": "送信",
+          "cancel": "キャンセル"
+        },
+        "register": {
+          "title": "アカウント作成",
+          "marketing": "メールマーケティングに登録する",
+          "first_name": "名",
+          "last_name": "姓"
+        },
+        "collection": {
+          "title": "アクセスが必要ですか？"
+        }
+      }
+    },
+    "pl": {
+      "single": {
+        "login": {
+          "title": "Zaloguj się",
+          "email": "E-mail",
+          "password": "Hasło",
+          "sign_in": "Zaloguj",
+          "forgot_password": "Zresetuj hasło",
+          "create_account": "Załóż konto"
+        },
+        "alert": {
+          "error_heading": "Wystąpił błąd",
+          "reset_success": "E-mail z instrukcjami resetowania hasła zostanie wysłany na Twoją skrzynkę odbiorczą."
+        },
+        "recover_password": {
+          "title": "Zresetuj swoje hasło",
+          "subtext": "Wyślemy Ci e-mail, aby zresetować hasło.",
+          "submit": "Wyślij",
+          "cancel": "Anuluj"
+        },
+        "register": {
+          "title": "Załóż konto",
+          "marketing": "Zapisz się do marketingu e-mailowego",
+          "first_name": "Imię",
+          "last_name": "Nazwisko"
+        },
+        "collection": {
+          "title": "Potrzebujesz dostępu?"
+        }
+      }
+    }
+  }
+}
+{% endschema %}

@@ -1,0 +1,59 @@
+{% comment %}
+  <!--
+  Copyright (c) 2023 Single, LLC - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single, LLC
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single, LLC and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single, LLC.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% render 'single-customer-storage' %}
+
+{% render 'single-product-block', product: product, show_title: 'true', description_position: 'above_cart',
+        show_images: 'true', show_add_to_cart: 'true', show_buy_it_now: 'true',
+        title_size: 'h1', price_size: 'h3', image_width: '2_4', product_width: '2_4' %}
+
+<single-grant-access
+        product-id="{{ product.id }}"
+        title="This product unlocks..."
+        title-size="h1"
+        row-title-size="h2"
+        product-title=""
+        video-title=""
+        no-items-title=""
+        show-key-product="false"
+        show-video-title="true"
+        show-video-date="true"
+        show-video-artist="true"
+        show-product-title="true"
+        show-product-description="true"
+        show-product-price-badge="true"
+        show-preview-items="true"
+        show-spinner="false"
+        top-padding="3em"
+        bottom-padding="2em"
+        column-count="4"
+        video-column-width="1"
+        product-column-width="2"
+></single-grant-access>
+
+<single-need-access
+        title="Get Access"
+        title-size="h1"
+        top-padding="3em"
+        bottom-padding="2em"
+        content-id="{{ product.id }}"
+        content-type="PRODUCT"
+></single-need-access>

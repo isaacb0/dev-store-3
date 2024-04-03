@@ -1,0 +1,11 @@
+<script>
+    if (window.localStorage) {
+        {% if customer %}
+        window.localStorage.setItem(`single_customer_id`, `{{ customer.id }}`);
+        window.localStorage.setItem(`single_customer_email`, `{{ customer.email }}`);
+        {% else %}
+        window.localStorage.removeItem(`single_customer_id`);
+        window.localStorage.removeItem(`single_customer_email`);
+        {% endif %}
+    }
+</script>

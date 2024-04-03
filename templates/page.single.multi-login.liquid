@@ -1,0 +1,8 @@
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-gated-content.css' | asset_url | stylesheet_tag }}
+
+{% render 'single-multi-login', login_details: login_details, page_url: page_url, title: title, title_size: title_size,
+        sub_title: sub_title, default_form: default_form, show_signup_link: show_signup_link,
+        show_cancel_signup_link: show_cancel_signup_link, login_title: login_title,
+        connect_wallet_title: connect_wallet_title, max_width: max_width, login_redirect_url: login_redirect_url,
+        signup_redirect_url: signup_redirect_url %}

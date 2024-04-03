@@ -1,0 +1,200 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single, LLC - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single, LLC
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single, LLC and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single, LLC.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-gated-content.css' | asset_url | stylesheet_tag }}
+
+<style>
+    .single-product-add-to-cart-btns .single-login-button {
+        width: 100%;
+    }
+
+    .single-image-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .single-image-row > img {
+        width: 15%;
+        cursor: pointer;
+    }
+</style>
+
+<div class="single-grid single-product" itemscope itemtype="http://schema.org/Product">
+    <div class="single-grid-item">
+        <!-- Product Metatags -->
+        <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+        <meta itemprop="image" content="{{ featured_image }}">
+        <meta property="og:title" content="{{ product.title }}">
+        <meta property="og:image" content="{{ featured_image }}">
+        <meta property="og:url" content="{{ shop.url }}{{ product.url }}">
+
+        <!-- Left Column -->
+        {% if show_images == 'true' %}
+            <div class="single-col col-{{ image_width }}">
+                {% for image in product.images %}
+                    <div class="single-product-image {% unless forloop.first %}hidden{% endunless %}"
+                         id="product-image-{{ forloop.index0 }}">
+                        <img src="{{ image.src | img_url: 'grande' }}">
+                    </div>
+                {% endfor %}
+                {% if product.images.size > 1 %}
+                    <div class="single-image-row">
+                        {% for image in product.images %}
+                            <img src="{{ image.src | img_url }}" onclick="showImage({{ forloop.index0 }});">
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        <!-- End Left Column -->
+
+        <!-- Right Column -->
+        <div class="single-col col-{{ product_width }}">
+            <!-- Begin Single Header -->
+            <div class="single-product-header">
+                {% if show_title == 'true' %}
+                    <div class="single-product-title {{ title_size }}" itemprop="name">
+                        <span>{{ product.title }}</span>
+                    </div>
+                {% endif %}
+                <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+                {% render 'single-nft-progress-bar', product: product %}
+                {% if description_position == 'above_price' %}<p class="single-product-description">{{ product.description }}</p>{% endif %}
+                <!-- Add to Cart -->
+                <div>
+                    <div class="single-product-price {{ price_size }}">{{ product.variants[0].price | money_with_currency }}</div>
+                    {% if product.variants.size > 1 %}
+                        <div class="single-product-options">
+                            {% for option in product.options %}
+                                {% assign option_loop = forloop %}
+                                <fieldset class="js product-form__input" id="fieldset-{{ option.name | handleize }}">
+                                    <legend class="form__label">{{ option.name }}</legend>
+                                    {% for value in option.values %}
+                                        <input
+                                                class="single-product-option-input"
+                                                type="radio"
+                                                id="{{ product.id }}-{{ option_loop.index0 }}-{{ forloop.index0 }}"
+                                                name="{{ option.name }}"
+                                                value="{{ value }}"
+                                                {% if forloop.first %}
+                                                    checked
+                                                {% endif %}
+                                        >
+                                        <label
+                                                class="single-product-option-label"
+                                                for="{{ product.id }}-{{ option_loop.index0 }}-{{ forloop.index0 }}"
+                                        >
+                                            {{- value -}}
+                                        </label>
+                                    {% endfor %}
+                                </fieldset>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% assign variant = product.variants.first %}
+                        {% unless variant.title == 'Default Title' %}
+                            <div class="single-product-variant-title">
+                                {{ variant.title }}
+                            </div>
+                        {% endunless -%}
+                        <input name="id" value="{{ variant.id }}" type="hidden">
+                    {% endif %}
+                    {% if description_position == 'above_cart' %}<p class="single-product-description">{{ product.description }}</p>{% endif %}
+                    <div>
+                        <product-form class="product-form" data-hide-errors="false">
+                            <div class="product-form__error-message-wrapper" role="alert" hidden>
+                                <svg aria-hidden="true"
+                                     focusable="false"
+                                     class="icon icon-error"
+                                     viewBox="0 0 13 13">
+                                    <circle cx="6.5" cy="6.50049" r="5.5" stroke="white" stroke-width="2"/>
+                                    <circle cx="6.5" cy="6.5" r="5.5" fill="#EB001B" stroke="#EB001B"
+                                            stroke-width="0.7"/>
+                                    <path d="M5.87413 3.52832L5.97439 7.57216H7.02713L7.12739 3.52832H5.87413ZM6.50076 9.66091C6.88091 9.66091 7.18169 9.37267 7.18169 9.00504C7.18169 8.63742 6.88091 8.34917 6.50076 8.34917C6.12061 8.34917 5.81982 8.63742 5.81982 9.00504C5.81982 9.37267 6.12061 9.66091 6.50076 9.66091Z"
+                                          fill="white"/>
+                                    <path d="M5.87413 3.17832H5.51535L5.52424 3.537L5.6245 7.58083L5.63296 7.92216H5.97439H7.02713H7.36856L7.37702 7.58083L7.47728 3.537L7.48617 3.17832H7.12739H5.87413ZM6.50076 10.0109C7.06121 10.0109 7.5317 9.57872 7.5317 9.00504C7.5317 8.43137 7.06121 7.99918 6.50076 7.99918C5.94031 7.99918 5.46982 8.43137 5.46982 9.00504C5.46982 9.57872 5.94031 10.0109 6.50076 10.0109Z"
+                                          fill="white" stroke="#EB001B" stroke-width="0.7">
+                                </svg>
+                                <span class="product-form__error-message"></span>
+                            </div>
+                            {%- assign product_form_id = 'product-form-' | append: section.id -%}
+                            {%- assign add_to_cart_button_id = 'ProductSubmitButton-' | append: section.id -%}
+                            {% if product.tags contains 'single-gated' %}
+                                {%- assign product_gated = true -%}
+                            {% endif %}
+                            {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+                                <div {% if product_gated %}class="hidden"{% endif %}>
+                                    <input type="hidden" name="id"
+                                           value="{{ product.selected_or_first_available_variant.id }}">
+                                    <button type="submit"
+                                            id="{{ add_to_cart_button_id }}"
+                                            name="add"
+                                            class="product-form__submit button button--full-width {% if product.selling_plan_groups == empty %}button--secondary{% else %}button--primary{% endif %}"
+                                            {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}>
+                                        <span>
+                                          {%- if product.selected_or_first_available_variant.available -%}
+                                              {% render 'single-add-to-cart' %}
+                                          {%- else -%}
+                                              Sold out
+                                          {%- endif -%}
+                                        </span>
+                                        <div class="loading-overlay__spinner hidden">
+                                            <svg aria-hidden="true"
+                                                 focusable="false"
+                                                 class="spinner"
+                                                 viewBox="0 0 66 66"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <circle class="path" fill="none" stroke-width="6" cx="33" cy="33"
+                                                        r="30"></circle>
+                                            </svg>
+                                        </div>
+                                    </button>
+                                    {{ form | payment_button }}
+                                </div>
+                                {% if product_gated %}
+                                    <single-product-form-wrapper
+                                            product-id="{{ product.id }}"></single-product-form-wrapper>
+                                {% else %}
+                                    <single-product-form-wallet></single-product-form-wallet>
+                                {% endif %}
+                            {%- endform -%}
+                        </product-form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Single Header -->
+        </div>
+        <!-- End Right Column -->
+    </div>
+    <!-- End Inner Wrap -->
+</div>
+<!-- End Product Wrap -->
+
+<script>
+    function showImage(index) {
+        document.querySelectorAll('.single-product-image').forEach(image => {
+            image.classList.add('hidden');
+        });
+        document.querySelector('#product-image-' + index).classList.remove('hidden');
+    }
+</script>

@@ -1,0 +1,116 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+<div class="single-grid-item">
+  <div class="single-access-denied col-4_4">
+    <h1>{{ 'single.no_ticket.title' | t }}</h1>
+    <p>{{ 'single.no_ticket.subtext_1' | t }}</p>
+    <p>{{ 'single.no_ticket.subtext_2' | t }}</p>
+    <a
+      href="{{ routes.account_logout_url }}"
+      class="btn button"
+    >
+      {{- 'single.no_ticket.log_out' | t }} ({{ customer.email }})</a
+    >
+  </div>
+</div>
+<script>
+  $('a[href^="{{ routes.account_logout_url }}"]').on('click', function () {
+    $.ajax($(this).attr('href')).done(function () {
+      window.location.href = '{{ request.path }}';
+    });
+    return false;
+  });
+</script>
+
+{% render 'single-video-ticket-promo' %}
+
+{% schema %}
+{
+  "locales": {
+    "en": {
+      "single": {
+        "no_ticket": {
+          "title": "...we can't find your ticket",
+          "subtext_1": "If you purchased a ticket, but cannot access this page, you may have used a different email when checking out.",
+          "subtext_2": "Please create account or log in using the email address from your purchase.",
+          "log_out": "Log Out"
+        },
+        "collection": {
+          "title": "Need Tickets?"
+        }
+      }
+    },
+    "fr": {
+      "single": {
+        "no_ticket": {
+          "title": "...Nous ne pouvons pas trouver ton billet",
+          "subtext_1": "Si tu as acheté un billet mais tu ne peux pas accéder à cette page il est possible que tu as utilisé un email différent pendant la réservation.",
+          "subtext_2": "Créer un compte ou te connecter en utilisant l'adresse email de ton achat stp.",
+          "log_out": "Se déconnecter"
+        },
+        "collection": {
+          "title": "Besoin de billets?"
+        }
+      }
+    },
+    "es": {
+      "single": {
+        "no_ticket": {
+          "title": "...No podemos encontrar tu ticket",
+          "subtext_1": "Si compraste un ticket pero no puedes acceder a esta página  es posible que hayas utilizado un correo electrónico diferente cuando lo compraste.",
+          "subtext_2": "Por favor crea una cuenta o inicia sesión usando la dirección de correo electrónico de tu compra.",
+          "log_out": "Cerrar sesión"
+        },
+        "collection": {
+          "title": "¿Necesitas entradas?"
+        }
+      }
+    },
+    "de": {
+      "single": {
+        "no_ticket": {
+          "title": "...Wir können Ihr Ticket nicht finden",
+          "subtext_1": "Wenn Sie ein Ticket gekauft haben, aber nicht auf diese Seite zugreifen können, haben Sie beim Auschecken möglicherweise eine andere E-Mail-Adresse verwendet.",
+          "subtext_2": "Bitte erstellen Sie ein Konto oder melden Sie sich mit der E-Mail-Adresse aus Ihrem Einkauf an.",
+          "log_out": "Ausloggen"
+        },
+        "collection": {
+          "title": "Benötigen Sie Tickets?"
+        }
+      }
+    },
+    "pt-BR": {
+      "single": {
+        "no_ticket": {
+          "title": "...não conseguimos encontrar o seu bilhete",
+          "subtext_1": "Se você comprou um ingresso, mas não consegue acessar esta página, pode ter usado um e-mail diferente ao fazer o check-out.",
+          "subtext_2": "Por favor, crie uma conta ou faça login usando o endereço de e-mail da sua compra.",
+          "log_out": "Sair"
+        },
+        "collection": {
+          "title": "Precisa de ingressos"
+        }
+      }
+    }
+  }
+}
+{% endschema %}

@@ -1,0 +1,48 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single, LLC - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single, LLC
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single, LLC and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single, LLC.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% render 'single-product-block', access_response: access_response, login_types: login_types,
+        product: product, featured_image: featured_image, show_title: show_title, description_position: description_position,
+        show_images: show_images, show_add_to_cart: show_add_to_cart, show_buy_it_now: show_buy_it_now,
+        title_size: title_size, price_size: price_size, image_width: image_width, product_width: product_width %}
+
+{% render 'single-grant-access',
+        login_types: login_types,
+        product_ids: product_ids,
+        product_hidden_count: product_hidden_count,
+        video_ids: video_ids,
+        video_hidden_count: video_hidden_count,
+        title: 'Grants access to the following:',
+        title_size: 'h2',
+        row_title_size: 'h2',
+        product_title: 'Exclusive Products',
+        video_title: 'Exclusive Videos',
+        video_show_title: 'true',
+        video_show_artist: 'true',
+        video_show_date: 'true',
+        product_show_title: 'true',
+        product_show_description: 'true',
+        product_show_badge: 'true',
+        column_count: '4',
+        video_column_width: '1',
+        product_column_width: '2' %}
+
+{% render 'single-need-access', title_size: 'h2', key_product_ids: key_product_ids, key_product_listings: key_product_listings %}

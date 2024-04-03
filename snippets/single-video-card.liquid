@@ -1,0 +1,38 @@
+{% assign video_pieces = video_input | split: '|' %}
+
+<div
+  class="single-card-video single-accessibility"
+  title="{{ video_pieces[0] }}"
+  onclick="location.href='{{ video_pieces[3] }}';"
+>
+  <div
+    class="single-card-image-wide {% if show_card_drop_shadow == 'true' %}has-shadow{% endif %}"
+    style="background-image: url({{ video_pieces[2] }})"
+  >
+    {% if show_badge == 'true' and video_pieces[4] == 'true' %}
+      <div class="single-video-badge">{{ badge_text }}</div>
+    {% endif %}
+    {% if show_date == 'true' and video_pieces[6] == 'Live' %}
+      <div class="single-video-event-date">
+        {{ video_pieces[1] | date: '%b %d • %I:%M %P %Z' }}
+      </div>
+    {% endif %}
+    {% if show_date == 'true' and video_pieces[6] != 'Live' %}
+      <div class="single-video-time">
+        {{ video_pieces[8] }}
+      </div>
+    {% endif %}
+  </div>
+  {% if show_title == 'true' or show_artist == 'true' %}
+    <div class="single-video-info">
+      {% if show_title == 'true' %}
+        <h4 class="single-video-title">{{ video_pieces[0] }}</h4>
+      {% endif %}
+      {% if show_artist == 'true' %}
+        <h6 class="single-video-description">
+         {{ video_pieces[5] }}
+        </h6>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

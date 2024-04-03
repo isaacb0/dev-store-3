@@ -1,0 +1,49 @@
+<input id="contentQuery" value="CONTENT_QUERY" placeholder="{{ 'single.search.placeholder' | t }}">
+<div class="single-search-actions">
+  <div id="contentQuerySearch" class="single-icon single-submit">{% render 'single-icon-search' %}</div>
+  <div id="contentQueryClear" class="single-icon single-submit">{% render 'single-icon-close' %}</div>
+</div>
+
+{% schema %}
+{
+  "name": "Single Search Bar",
+  "class": "single-search-bar",
+  "locales": {
+    "en": {
+      "single": {
+        "search": {
+          "placeholder": "Search by Title"
+        }
+      }
+    },
+    "fr": {
+      "single": {
+        "search": {
+          "placeholder": "Rechercher par titre"
+        }
+      }
+    },
+    "es": {
+      "single": {
+        "search": {
+          "placeholder": "Buscar por título"
+        }
+      }
+    },
+    "de": {
+      "single": {
+        "search": {
+          "placeholder": "Suche nach Titel"
+        }
+      }
+    },
+    "pt-BR": {
+      "single": {
+        "search": {
+          "placeholder": "Busca por Título"
+        }
+      }
+    }
+  }
+}
+{% endschema %}

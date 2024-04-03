@@ -1,0 +1,81 @@
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-video-bar.css' | asset_url | stylesheet_tag }}
+
+<section class="single-content-section {% if display_type == 'grid' and max_width == 'true' %}page-width{% endif %}">
+  <h2 class="title {{ title_size }} video-collection-title">{{ section_title }}</h2>
+  {% if section_description %}
+    <div class="video-collection-description">{{ section_description }}</div>
+  {% endif %}
+  {% if display_type == 'grid' %}
+    <div class="single-grid video-grid">
+      <section class="single-grid-item">
+        {% if video_ids.size > 0 %}
+          {% for video_input in video_ids %}
+            <div class="single-col col-1_{{ column_count }}">
+              {% render 'single-video-card',
+                video_input: video_input,
+                show_title: show_title,
+                show_date: show_date,
+                show_artist: show_artist,
+                show_badge: show_badge,
+                show_card_drop_shadow: show_card_drop_shadow,
+                badge_text: badge_text
+              %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="single-col col-4_4">
+            {% section 'single-gated-no-results' %}
+          </div>
+        {% endif %}
+      </section>
+    </div>
+  {% else %}
+    <div id="{{ row_id }}" class="single-card-row video-slider">
+      {% if video_ids.size > 0 %}
+        <div class="single-chevron left">
+          {% render 'single-chevron-left' %}
+        </div>
+        <div class="single-video-slider">
+          {% for video_input in video_ids %}
+            {% render 'single-video-card',
+              video_input: video_input,
+              show_title: show_title,
+              show_date: show_date,
+              show_artist: show_artist,
+              show_badge: show_badge,
+              show_card_drop_shadow: show_card_drop_shadow,
+              badge_text: badge_text
+            %}
+          {% endfor %}
+        </div>
+        <div class="single-chevron right">
+          {% render 'single-chevron-right' %}
+        </div>
+      {% else %}
+        <div class="single-col col-4_4">
+          {% section 'single-gated-no-results' %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+  {% if video_landing_url %}
+    <div class="single-col col-4_4">
+      {% capture single_video_view_all %}{% section 'single-video-view-all' %}{% endcapture %}
+      {{ single_video_view_all | replace: 'VIDEO_LANDING_URL', video_landing_url }}
+    </div>
+  {% endif %}
+</section>
+
+<script>
+  if (typeof SingleVideoBarSlider === 'undefined') {
+      let scriptUrl = "{{ 'single-video-bar.js' | asset_url }}";
+      let videoBarScript = document.createElement('script');
+      videoBarScript.setAttribute('src', scriptUrl);
+      videoBarScript.setAttribute('async', false);
+      document.head.appendChild(videoBarScript);
+      videoBarScript.addEventListener('load', () => new SingleVideoBarSlider({{ row_id | json }}));
+  } else {
+      new SingleVideoBarSlider({{ row_id | json }});
+  }
+</script>

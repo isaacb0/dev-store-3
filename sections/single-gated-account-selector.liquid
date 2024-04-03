@@ -1,0 +1,73 @@
+<div class="single-dropdown-options" tabindex="-1">
+  <div class="single-dropdown-button">
+    {% render 'single-icon-cog' %}
+  </div>
+  <div class="single-dropdown-content">
+    {% if customer %}
+      <div class="single-dropdown-content-row" onclick="location.href='MEMBERSHIP_URL'">
+        {{ 'single.account.manage' | t }}
+      </div>
+      <div class="single-dropdown-content-row" onclick="location.href='/account/logout'">
+        {{ 'single.account.log_out' | t }}
+      </div>
+    {% endif %}
+    <div class="single-dropdown-content-row single-gate-logout single-hidden" hidden>
+      <div class="single-logout-button">{{ 'single.account.disconnect_wallet' | t }}</div>
+    </div>
+    SINGLE_LOGIN_BUTTONS
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Single - Account Selector",
+  "class": "single-dropdown",
+  "locales": {
+    "en": {
+      "single": {
+        "account": {
+          "manage": "Manage Account",
+          "log_out": "Log Out",
+          "disconnect_wallet": "Disconnect Wallet"
+        }
+      }
+    },
+    "fr": {
+      "single": {
+        "account": {
+          "manage": "Gérer son compte",
+          "log_out": "Se déconnecter",
+          "disconnect_wallet": "Déconnecter le portefeuille"
+        }
+      }
+    },
+    "es": {
+      "single": {
+        "account": {
+          "manage": "Administrar cuenta",
+          "log_out": "Cerrar sesión",
+          "disconnect_wallet": "Desconectar billetera"
+        }
+      }
+    },
+    "de": {
+      "single": {
+        "account": {
+          "manage": "Konto verwalten",
+          "log_out": "Ausloggen",
+          "disconnect_wallet": "Brieftasche trennen"
+        }
+      }
+    },
+    "pt-BR": {
+      "single": {
+        "account": {
+          "manage": "Gerenciar conta",
+          "log_out": "Sair",
+          "disconnect_wallet": "Desconectar carteira"
+        }
+      }
+    }
+  }
+}
+{% endschema %}

@@ -1,0 +1,160 @@
+<style>
+  .login-container {
+    padding: 4em 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-container.has-wallet {
+    width: 75%;
+  }
+
+  .login-separator {
+    flex: 0 4;
+    padding: 0 25px;
+  }
+
+  .login-separator::before,
+  .login-separator::after {
+    content: '';
+    width: 1px;
+    background: #ccc;
+    height: 100px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .login-option {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+    text-align: center;
+  }
+
+  .login-option > div {
+      display: block !important;
+  }
+
+  #customer_login .email,
+  #form-recover .email,
+  #customer_login .password {
+    margin-bottom: 2rem;
+  }
+
+  .login-container .recover-links {
+    margin-top: 10px;
+  }
+
+  .login-container .recover-links a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .key-products {
+    margin-bottom: 4rem;
+    justify-content: center;
+  }
+
+  @media screen and (max-width: 992px) {
+    .login-container {
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .login-container {
+      flex-direction: column;
+    }
+
+    .login-option {
+      width: 100%;
+    }
+
+    .login-option .single-gate {
+      margin-top: 0;
+    }
+
+    .login-separator {
+      width: 100%;
+      margin: 25px 0;
+      position: relative;
+      text-align: center;
+    }
+
+    .login-separator::before {
+      position: absolute;
+      width: 38%;
+      top: 51%;
+      overflow: hidden;
+      height: 1px;
+    }
+
+    .login-separator::after {
+      position: absolute;
+      width: 38%;
+      top: 51%;
+      right: 25px;
+      overflow: hidden;
+      height: 1px;
+    }
+  }
+</style>
+
+<div class="single-grid-item login-container">
+  {% if title or sub_title %}
+    <div class="single-col col-4_4 text-center">
+      {% if title %}
+        <h2 class="title {{ title_size }}">{{ title }}</h2>
+      {% endif %}
+      {% if sub_title %}
+        <div class="description">{{ sub_title }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% for login_detail in login_details %}
+    {% if forloop.first != true %}
+      <div class="login-separator">OR</div>
+    {% endif %}
+    {% assign login_detail_parts = login_detail | split: '|' %}
+    <div class="login-option">
+      {% if login_detail_parts[0] == 'CUSTOMER' %}
+        {% if login_detail_parts.size > 1 and login_detail_parts[1] == 'true' %}
+          <section class="single-login customer single-logout">
+            <h2>Logged In</h2>
+            <p>You do not have access to this content.</p>
+            <a href="/account/logout" style="text-decoration: none;">
+              <button class="btn button">Log Out</button>
+            </a>
+          </section>
+        {% else %}
+          {% capture single-customer-login %}{% section 'single-base-login' %}{% endcapture %}
+          {% unless default_form == 'signup' %}
+            {% assign single-customer-login = single-customer-login | replace: 'REGISTER_CLASSES', 'single-hidden' %}
+          {% else %}
+            {% assign single-customer-login = single-customer-login | replace: 'LOGIN_CLASSES', 'single-hidden' %}
+          {% endunless %}
+          {% if show_signup_link == 'false' %}
+            {% assign single-customer-login = single-customer-login | replace: 'SIGNUP_LINK_CLASSES', 'single-hidden' %}
+          {% endif %}
+          {% if show_cancel_signup_link == 'false' %}
+            {% assign single-customer-login = single-customer-login | replace: 'CANCEL_SIGNUP_LINK_CLASSES', 'single-hidden' %}
+          {% endif %}
+          {{ single-customer-login | replace: 'LOGIN_TITLE', login_title | replace: 'LOGIN_REDIRECT_URL', login_redirect_url | replace: 'SIGNUP_REDIRECT_URL', signup_redirect_url }}
+        {% endif %}
+      {% elsif login_detail_parts[0] == 'WALLET' %}
+        {% if login_detail_parts.size > 1 and login_detail_parts[1] == 'true' %}
+          <section class="single-gate single-gate-login single-logout">
+            <h2>Wallet Connected</h2>
+            <p>Permitted NFT not found.</p>
+            <button class="single-logout-button btn button">Disconnect Wallet</button>
+          </section>
+        {% else %}
+          {% capture single-connect-wallet %}{% section 'single-wallet-login' %}{% endcapture %}
+          {{ single-connect-wallet | replace: 'CONNECT_WALLET_TITLE', connect_wallet_title  }}
+        {% endif %}
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

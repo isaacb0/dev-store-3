@@ -1,0 +1,24 @@
+{% assign listing_pieces = product_listing | split: '|||' %}
+{% assign listing_links = listing_pieces[0] | split: '||' %}
+{% assign required_amount = listing_pieces[3] %}
+
+
+<div class="single-card single-card-product">
+    <div class="single-card-image">
+        {% render 'single-image', image_url: listing_pieces[2] %}
+    </div>
+    <div class="single-card-info">
+        <h3>{{ listing_pieces[1] }}</h3>
+        {% for listing_link in listing_links %}
+            {% assign link_parts = listing_link | split: '|' %}
+            <div class="card__badge">
+                <button class="btn button" onclick="location.href='{{ link_parts[1] }}';">Buy on {{ link_parts[0] }}</button>
+            </div>
+        {% endfor %}
+        {% if required_amount and required_amount != "0" %}
+            <div class="card__badge">
+                <span class="badge badge--bottom-left">{{ required_amount }} Required</span>
+            </div>
+        {% endif %}
+    </div>
+</div>

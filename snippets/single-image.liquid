@@ -1,0 +1,8 @@
+{% if image_url %}
+  {% assign image_src = image_url %}
+{% elsif image.src contains 'http' %}
+  {% assign image_src = image.src %}
+{% else %}
+  {% assign image_src = image.src | image_url %}
+{% endif %}
+<img src="{{ image_src }}" alt="{{ image.alt }}" loading="lazy">

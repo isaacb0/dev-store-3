@@ -1,0 +1,123 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{{ 'single-video.css' | asset_url | stylesheet_tag }}
+
+<div class="single-grid-item single-collection {% if max_width == 'true' %}page-width{% endif %}">
+  {% if title or section_description %}
+      <div class="single-col col-4_4">
+      {% if title %}
+        <h2 class="title {{ title_size }}">{{ title }}</h2>
+      {% endif %}
+      {% if section_description %}
+        <div class="description">{{ section_description }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+  {% for product in collections[collection_handle].products %}
+    <div class="single-collection-product single-col col-1_{{ column_count }}">
+      <a class="single-collection-product-link" href="{{ product.url }}" target="_blank">
+        <div class="single-collection-product-img-wrap">
+          <img class="single-collection-product-img" src="{{ product.featured_image | img_url: '640x640' }}" alt="{{ product.featured_image.alt }}" loading="lazy"/>
+        </div>
+        {% if show_product_title == 'true' %}
+          <div class="single-collection-product-title card__heading {{ product_title_size }}">{{ product.title }}</div>
+        {% endif %}
+      </a>
+      {% unless product.variants.size > 1 %}
+        {% if show_product_price == 'true' %}
+          <p class="single-collection-product-price" id="single-product-price-{{product.id}}">{{ product.variants.first.price | money }}</p>
+        {% endif %}
+      {% endunless %}
+      <form class="single-collection-product-form"
+            action="/cart/add"
+            method="post"
+            enctype="multipart/form-data"
+            id="product_form_{{product.id}}">
+          {% if video_id %}
+            <input type="hidden" name="properties[__livestream_id__{{ video_id }}]" value=""/>
+          {% endif %}
+        {% if product.variants.size > 1 %}
+          <div class="select single-select-wrap single-variant-select">
+            <select name="id" class="single-select select__select" id="single-variant-select-{{product.id}}">
+              {% for variant in product.variants %}
+                {% if variant.available == true %}
+                  <option value="{{variant.id}}" data-price="{{variant.price | money }}" data-product-id="{{product.id}}">
+                    {{ variant.title }}
+                    {% if show_product_price == 'true' %}
+                      <span>- {{variant.price | money }}</span>
+                    {% endif %}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+            {% render 'single-icon-caret' %}
+          </div>
+        {% else %}
+          <input type="hidden" name="id" id="single-variant-select-{{product.id}}" value="{{ product.variants.first.id }}"/>
+        {% endif %}
+        {% if product.selling_plan_groups %}
+          <input type="hidden" id="selling-plan-{{ product.id }}" name="selling_plan"/>
+          <script type="text/javascript">
+            const product{{ product.id }} = {{ product | json }};
+            const variantSelect{{ product.id }} = document.getElementById('single-variant-select-{{ product.id }}');
+            const spSelect{{ product.id }} = document.getElementById('selling-plan-{{ product.id }}');
+            variantSelect{{ product.id }}.addEventListener('change', populateSellingPlan{{ product.id }});
+            if (/complete|interactive|loaded/.test(document.readyState)) {
+                populateSellingPlan{{ product.id }}();
+            } else {
+                window.addEventListener('DOMContentLoaded', populateSellingPlan{{ product.id }});
+            }
+
+            function populateSellingPlan{{ product.id }}() {
+              const variant = product{{ product.id }}.variants.find(v => v.id.toString() === variantSelect{{ product.id }}.value);
+              if (!! variant && !! variant.selling_plan_allocations && variant.selling_plan_allocations.length > 0) {
+                spSelect{{ product.id }}.value = variant.selling_plan_allocations[0].selling_plan_id;
+              }
+            }
+          </script>
+        {% endif %}
+        {% if show_quick_add == 'true' %}
+          <input type="submit"
+                name="add"
+                value="{% render 'single-add-to-cart' %}"
+                class="single-collection-add-to-cart button">
+        {% endif %}
+      </form>
+      <script>
+          document.dispatchEvent(new CustomEvent('video:requested'));
+
+          document.addEventListener('video:loaded', (event) => {
+              const form = document.getElementById('product_form_{{product.id}}');
+              const videoIdInput = form.querySelector('input[name^="properties[__livestream_id__"]');
+              if (!!videoIdInput) {
+                  form.removeChild(videoIdInput);
+              }
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = 'properties[__livestream_id__' + event.detail + ']';
+              input.value = ' ';
+              form.appendChild(input);
+          });
+      </script>
+    </div>
+  {%- endfor -%}
+</div>

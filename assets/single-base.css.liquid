@@ -1,0 +1,277 @@
+/*
+Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED 
+
+NOTICE:  All information contained herein is, and remains the property of Single Media,
+Inc and its suppliers, if any. The intellectual and technical concepts contained herein are 
+proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents, 
+patents in process, and are protected by trade secret or copyright law. Dissemination of this 
+information or reproduction of this material is strictly forbidden unless prior 
+written permission is obtained from Single Media, Inc.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/* Icons */
+@import url('//fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
+
+/** Resets **/
+*:focus {
+  outline: 0;
+}
+
+img {
+  max-width: 100%;
+}
+
+/** Layout **/
+.single-grid {
+  overflow-x: hidden;
+}
+
+.single-grid-item {
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1200px;
+  max-width: var(--page-width);
+  display: flex;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.single-grid-item * {
+  box-sizing: border-box;
+}
+
+.single-col {
+  gap: 1em;
+  padding: 1em;
+}
+
+.col-1_5 {
+  width: 20%;
+}
+
+.col-1_4 {
+  width: 25%;
+}
+
+.col-1_3 {
+  width: 33.333%;
+}
+
+.col-2_5 {
+  width: 40%;
+}
+
+.col-1_2,
+.col-2_4 {
+  width: 50%;
+}
+
+.col-3_5 {
+  width: 60%;
+}
+
+.col-2_3 {
+  width: 66.667%;
+}
+
+.col-3_4 {
+  width: 75%;
+}
+
+.col-4_5 {
+  width: 80%;
+}
+
+.col-5_5,
+.col-4_4,
+.col-3_3,
+.col-2_2,
+.col-1_1 {
+  width: 100%;
+}
+
+.align-right {
+  justify-content: end;
+  align-items: end;
+}
+
+/* Tablet */
+@media screen and (max-width: 990px) {
+  .single-col.col-1_4 {
+    width: 50%;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 750px) {
+  .single-grid-item {
+    flex-direction: column;
+    padding: 0 1.5rem;
+  }
+
+  .single-col {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/** Text **/
+a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.single-align-center {
+  margin: 0 auto;
+  align-self: center;
+}
+
+.single-hidden {
+  display: none !important;
+}
+
+.description {
+  margin: 1em 0 0 0;
+}
+
+.description ul, ol {
+  text-align: left;
+}
+
+.description a {
+  text-decoration: underline;
+}
+
+/* Selects */
+
+.single-select-wrap {
+  margin: 1em auto;
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+.single-select {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 2rem;
+  background-image: none;
+}
+
+.single-select-wrap .icon-caret {
+  position: absolute;
+  height: 0.6rem;
+  top: calc(50% - 0.2rem);
+  right: 1rem;
+}
+
+/** Animations **/
+.animated {
+  -webkit-animation-duration: 0.25s;
+  animation-duration: 0.25s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+/*** Product & Membership Pages ***/
+.single-product {
+  margin-top: 2rem;
+}
+
+.single-product-image img {
+  width: 100%;
+}
+
+.single-product-title {
+  margin: 0 0 1.5rem 0;
+}
+
+.single-product-add-to-cart-btns {
+  margin: 2.5rem auto;
+}
+
+.single-product-add-to-cart-btns .btn {
+  margin-bottom: 1rem;
+}
+
+.single-login-container {
+  display: flex;
+  gap: 1em;
+}
+
+.single-login-option {
+  flex-grow: 1;
+}
+
+.single-customer-login-button {
+  width: 100%;
+}
+
+/** Product Cards - Vertical **/
+.single-collection {
+  margin: 2em auto;
+  justify-content: center;
+}
+
+.single-collection-product {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2em;
+  padding: 1em;
+  gap: 0;
+}
+
+.single-collection-product-link,
+.single-collection-product-form {
+  width: 100%;
+}
+
+.single-collection-product-link {
+  flex-grow: 1;
+}
+
+.single-collection-product-img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  margin-bottom: 1em;
+}
+
+.single-collection-product-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition: transform 0.2s linear 0s;
+}
+
+.single-collection-product-img:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s linear 0s;
+}
+
+.single-collection-product-price {
+  margin: 0 0 1em;
+}
+
+.single-collection-add-to-cart {
+  width: 100%;
+}

@@ -1,0 +1,388 @@
+/*
+Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED 
+
+NOTICE:  All information contained herein is, and remains the property of Single Media,
+Inc and its suppliers, if any. The intellectual and technical concepts contained herein are 
+proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents, 
+patents in process, and are protected by trade secret or copyright law. Dissemination of this 
+information or reproduction of this material is strictly forbidden unless prior 
+written permission is obtained from Single Media, Inc.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/** Album Pages **/
+
+.single-music-product {
+  padding-top: 4em;
+  padding-bottom: 4em;
+}
+
+.single-album-art {
+  margin-bottom: 1em;
+}
+
+.single-album-art img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.single-album-release-date {
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.single-album-description {
+  font-size: 0.9em;
+}
+
+.single-album-description.mobile-desc {
+  display: none;
+}
+
+.single-share-menu .single-share-link {
+  display: inline-block;
+  margin-right: 0.25em;
+}
+
+.single-album-header {
+  box-sizing: border-box;
+}
+
+.single-album-header h1.single-album-title {
+  margin: 0 0 5px;
+}
+
+.single-album-header p.single-album-artist {
+  font-size: 90%;
+  font-style: italic;
+}
+
+.single-album-price {
+  margin-bottom: 1.5em;
+  display: block;
+  font-weight: 400;
+}
+
+.single-album-price p {
+  margin: 0;
+  padding: 0;
+}
+
+.single-album-price span {
+  vertical-align: middle;
+  display: inline-block;
+  width: auto;
+}
+
+.single-album-price span i {
+  display: block;
+}
+
+.single-album-track-play {
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.single-field-label {
+  font-size: 0.75em;
+  margin-bottom: 0.25em;
+  font-weight: bold;
+}
+
+.single-select-field,
+.single-album-add-to-cart .btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.single-presale-note {
+  font-size: 0.9em;
+  margin-bottom: 15px;
+}
+
+.single-ajaxified-cart-feedback i {
+  vertical-align: middle;
+  font-size: 1em;
+}
+
+.single-track {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: .5em 0;
+}
+
+.single-track-preview {
+    cursor: pointer !important;
+}
+
+.single-track i {
+    line-height: 1;
+    display: block;
+    height: 24px;
+    width: 24px;
+}
+
+.single-track-play {
+  margin-right: 1em;
+  color: inherit;
+  color: {{ settings.colors_solid_button_labels }};
+  background-color: transparent;
+  background-color: {{ settings.colors_accent_1 }};
+  border-radius: 100%;
+}
+
+.single-track-title {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 1em;
+}
+
+.single-track-title div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.single-track-time {
+  font-size: .8em;
+  margin-right: 1.5em;
+  text-align: right;
+}
+
+.single-track-add-to-cart {
+  display: flex;
+  justify-content: end;
+}
+
+.single-track-btn {
+  display: inline-flex;
+  align-self: end;
+  align-items: center;
+  gap: .5em;
+  background-color: black;
+  background-color:{{ settings.colors_accent_1 }};
+  color: white;
+  color:{{ settings.colors_solid_button_labels }};
+  padding: .5em 1em;
+  font-size: .75em;
+  border-radius: 6px;
+  justify-content: space-between;
+  min-width: 85px;
+}
+
+.single-track-btn i {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+.single-footer-player {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: black;
+  background-color:{{ settings.colors_accent_2 }};
+  color: white;
+  color:{{ settings.colors_solid_button_labels }};
+  border-top: solid 0.1rem rgba(255,255,255,.1);
+  border-top: solid 0.1rem {{ settings.colors_solid_button_labels }}15;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1;
+  font-size: 16px;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.single-footer-player * {
+  box-sizing: border-box;
+}
+
+.single-footer-player .single-col {
+  align-items: center;
+  display: flex;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.track-thumbnail {
+  line-height: 0;
+}
+
+.track-thumbnail img {
+  border-radius: 4px;
+  height: 60px;
+  width: 60px;
+}
+
+.track-info {
+  display: inline-flex;
+  flex-direction: column;
+  overflow: hidden;
+  white-space: nowrap;
+  width: calc(100% - (60px + 1em));
+}
+
+.track-title {
+  font-weight: bolder;
+  margin-bottom: .25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-artist {
+  font-size: .75em;
+  opacity: .75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.small {
+  font-size: .75em;
+}
+
+.track-meta {
+  margin-top: .75em;
+}
+
+.divider,
+.remaining {
+  opacity: .5;
+  font-size: .75em
+}
+
+.track-waveform {
+  flex-grow: 1;
+}
+
+#controls {
+  justify-content: end;
+}
+
+.player-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: .25em;
+  font-size: 24px;
+}
+
+.play {
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.player-controls .prev,
+.player-controls .next,
+.single-track-add-to-cart {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 750px) {
+  .single-track-time, 
+  .single-album-release-date,
+  .single-album-description.desktop-desc  {
+      display: none;
+  }
+
+  .single-album-description.mobile-desc {
+    display: block;
+  }
+
+  .single-footer-player {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .single-footer-player .single-col {
+    padding: 1em !important;
+  }
+
+  #main_info {
+    display: flex;
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  #progress {
+    display: none;
+  }
+
+  #controls {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .track-details,
+  .track-purchase {
+    flex-basis: 30%;
+  }
+
+  .player-controls {
+    gap: .5em;
+  }
+
+  .track-info {
+    font-size: .8em;
+  }
+
+  .track-thumbnail img {
+    height: 30px;
+    width: 30px;
+  }
+}
+
+.pulse {
+  -webkit-animation-name: pulse;
+  animation-name: pulse;
+}
+
+@-webkit-keyframes pulse {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    -webkit-transform: scale3d(1.25, 1.25, 1.25);
+    transform: scale3d(1.25, 1.25, 1.25);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes pulse {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    -webkit-transform: scale3d(1.25, 1.25, 1.25);
+    transform: scale3d(1.25, 1.25, 1.25);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}

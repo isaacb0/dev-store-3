@@ -1,0 +1,166 @@
+{% comment %}
+<!--
+Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+and its suppliers, if any. The intellectual and technical concepts contained herein are
+proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+patents in process, and are protected by trade secret or copyright law. Dissemination of this
+information or reproduction of this material is strictly forbidden unless prior
+written permission is obtained from Single Media, Inc.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+{% endcomment %}
+
+
+{% capture trackReleaseDateString %}{{ track.metafields.track.release_date }}{% endcapture %}
+{% assign trackDateParts =  trackReleaseDateString | split: "/" %}
+{% capture trackReleaseDateFormatted -%}
+  {{- trackDateParts[2] }}-{{ trackDateParts[0] }}-{{ trackDateParts[1] -}}
+{%- endcapture %}
+{% assign trackReleaseDate = trackReleaseDateFormatted | date: "%s" | plus: 0 %}
+{% capture trackOnSale -%}
+  {%- if trackReleaseDate <= now %}true{% endif -%}
+{%- endcapture %}
+{% capture previewAvailable -%}
+  {%- if track.metafields.track.preview == "true" %}true{% endif -%}
+{%- endcapture %}
+{% assign previewLink = track.metafields.track.preview_link %}
+{% capture albumOnly -%}
+  {%- if track.metafields.track.album_only == "true" %}true{% endif -%}
+{%- endcapture %}
+{% capture previewClickEvent -%}
+  {%- if trackOnSale == "true" and previewAvailable == "true" -%}
+    onclick="togglePlayingTrack('{{ track.id }}', '{{ previewLink }}')"
+  {%- endif -%}
+{%- endcapture %}
+{% capture trackTime -%}
+  {%- if track.metafields.track.track_time != '' -%}
+    <span>{{ track.metafields.track.track_time }}</span>
+  {%- endif -%}
+{%- endcapture %}
+{% capture previewClass -%}
+  {%- if previewAvailable == "true" %} single-track-preview{% endif -%}
+{%- endcapture %}
+{% capture availableClass -%}
+  {%- if trackOnSale == "true" %} single-track-available{% endif -%}
+{%- endcapture %}
+{% assign tuning = track.metafields.track.tuning | default: 'C#' %}
+{% assign bpm = track.metafields.track.bpm | default: '126bpm' %}
+
+{% for variant in track.variants %}
+  {% if variant.available %}
+    {% if variant == track.selected_or_first_available_variant %}
+      {% assign track_variant = variant.id %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+<style>
+
+</style>
+
+{% if trackOnSale == "true" and previewAvailable == "true" %}
+  <a
+      class='single-track {{previewClass}} {{availableClass}} js-no-transition'
+      data-track-id='{{ track.id }}'
+      data-variant-id='{{ track_variant }}'
+      data-preview-link='{{ previewLink | escape }}'
+      data-tuning='{{ tuning | escape }}'
+      data-bpm='{{ bpm | escape }}'
+      data-title='{% if track.metafields.track.featured_artist_names %}{{ track.title }} (feat. {{track.metafields.track.featured_artist_names}}){% else %}{{ track.title | escape }}{% endif %}'
+      data-artist='{{ product.metafields.album.artist_name | escape }}'
+      data-album-track-count='{{ product.metafields.album.track_count }}'
+      data-price='{{ track.price | money }}'
+  >
+    <div
+        class='single-track-play'
+        data-href=''
+        data-track-id='{{ track.id }}'
+        data-variant-id='{{ track_variant }}'
+        data-preview-link='{{ previewLink | escape }}'
+        data-tuning='{{ tuning | escape }}'
+        data-bpm='{{ bpm | escape }}'
+        data-title='{% if track.metafields.track.featured_artist_names %}{{ track.title }} (feat. {{track.metafields.track.featured_artist_names}}){% else %}{{ track.title | escape }}{% endif %}'
+        data-artist='{{ product.metafields.album.artist_name | escape }}'
+        data-album-track-count='{{ product.metafields.album.track_count }}'
+        data-price='{{ track.price | money }}'
+    >
+      {% if trackOnSale == "true" and previewAvailable == "true" %}
+        <span class='single-play-icon'>
+          <i class='material-icons'>play_circle_outline</i>
+        </span>
+      {% endif %}
+    </div>
+
+    <div class='single-track-title'>
+      {% if track.metafields.track.featured_artist_names %}
+        <span>{{ track.title }} (feat. {{ track.metafields.track.featured_artist_names }})</span>
+      {% else %}
+        <span>{{ track.title }}</span>
+      {% endif %}
+    </div>
+
+    {% if trackOnSale == "true" and previewAvailable == "true" %}
+      <div class='single-track-time'>
+        {{ trackTime }}
+      </div>
+    {% endif %}
+
+    {% if track.metafields.track.album_only == "true" or trackOnSale != "true" %}
+      <!-- If Album Only -->
+    {% else %}
+      {% if presale != "true" or trackOnSale == "true" %}
+        <div
+            class='single-track-add-to-cart'
+            data-variant-id='{{ track_variant }}'
+            data-track-id='{{ track.id }}'
+        >
+          <div class='single-track-btn'>
+            <i class='material-icons single-add-track-to-cart-icon-{{track.id}}'
+            >add_shopping_cart</i
+            >
+            <span>{{ track.price | money }}</span>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </a>
+{% else %}
+  <div class='single-track'>
+    <div class='single-track-title'>
+      {% if product.metafields.album.confidential_release_date == "true" and trackOnSale != "true" %}
+        <span style='opacity: .5;'>Track {{ track.metafields.track.track_order }}</span>
+      {% else %}
+        {% if track.metafields.track.featured_artist_names %}
+          <span>{{ track.title }} (feat. {{ track.metafields.track.featured_artist_names }})</span>
+        {% else %}
+          <span>{{ track.title }}</span>
+        {% endif %}
+      {% endif %}
+    </div>
+    {% if track.metafields.track.album_only == "true" or trackOnSale != "true" %}
+      <!-- Not For Individual Sale -->
+    {% else %}
+      <div
+          class='single-track-add-to-cart'
+          data-variant-id='{{ track_variant }}'
+          data-track-id='{{ track.id }}'
+      >
+        <div class='single-track-btn'>
+          <i class='material-icons single-add-track-to-cart-icon-{{track.id}}'
+          >add_shopping_cart</i
+          >
+          <span>{{ track.price | money }}</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

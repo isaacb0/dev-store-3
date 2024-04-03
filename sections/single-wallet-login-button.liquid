@@ -1,0 +1,59 @@
+<!-- Anonymous -->
+<section class="single-gate-login" hidden>
+  <button class="single-login-button btn button" style="margin: 0;">{{ 'single.login.connect_wallet' | t }}</button>
+</section>
+
+<!-- Waiting For Approval -->
+<section class="single-gate-waiting" hidden>
+  <button class="btn button button--full-width">
+    <single-spinner size="small"></single-spinner>
+    <span style="margin-left: 1em;">{{ 'single.login.approve' | t }}</span>
+  </button>
+</section>
+
+{% schema %}
+{
+  "locales": {
+    "en": {
+      "single": {
+        "login": {
+          "connect_wallet": "Connect Wallet",
+          "approve": "Waiting for signature approval..."
+        }
+      }
+    },
+    "fr": {
+      "single": {
+        "login": {
+          "connect_wallet": "Connecter le portefeuille",
+          "approve": "En attente d'approbation de signature..."
+        }
+      }
+    },
+    "es": {
+      "single": {
+        "login": {
+          "connect_wallet": "Conectar billetera",
+          "approve": "Esperando la aprobación de la firma..."
+        }
+      }
+    },
+    "de": {
+      "single": {
+        "login": {
+          "connect_wallet": "Brieftasche verbinden",
+          "approve": "Warten auf Unterschriftsgenehmigung..."
+        }
+      }
+    },
+    "pt-BR": {
+      "single": {
+        "login": {
+          "connect_wallet": "Conectar Carteira",
+          "approve": "Aguardando aprovação de assinatura..."
+        }
+      }
+    }
+  }
+}
+{% endschema %}

@@ -1,0 +1,95 @@
+{% assign product_pieces = product_input | split: '|' %}
+{% assign product = all_products[product_pieces[0]] %}
+
+{% if product and product != blank %}
+  <div class="single-collection-product">
+    <a class="single-collection-product-link" href="{{ product.url }}" target="_blank">
+      <div class="single-collection-product-img-wrap">
+        <img
+          class="single-collection-product-img"
+          src="{{ product.featured_image | img_url: '640x640' }}"
+          alt="{{ product.featured_image.alt }}"
+          loading="lazy"
+        >
+      </div>
+      {% if show_title == 'true' %}
+        <div class="single-collection-product-title card__heading">{{ product.title }}</div>
+      {% endif %}
+      {% if show_description == 'true' %}
+        <p>{{ product.description }}</p>
+      {% endif %}
+    </a>
+    {% unless product.variants.size > 1 %}
+      {% if show_badge == 'true' %}
+        <p class="single-collection-product-price" id="single-product-price-{{product.id}}">
+          {{ product.variants.first.price | money }}
+        </p>
+      {% endif %}
+    {% endunless %}
+    {% if show_quick_add == 'true' %}
+      <form
+        class="single-collection-product-form"
+        action="/cart/add"
+        method="post"
+        enctype="multipart/form-data"
+        id="product_form_{{product.id}}"
+      >
+        {% if product.variants.size > 1 %}
+          <div class="select single-select-wrap single-variant-select">
+            <select name="id" class="single-select select__select" id="single-variant-select-{{product.id}}">
+              {% for variant in product.variants %}
+                {% if variant.available == true %}
+                  <option
+                    value="{{variant.id}}"
+                    data-price="{{variant.price | money }}"
+                    data-product-id="{{product.id}}"
+                  >
+                    {{ variant.title }}
+                    {% if show_badge == 'true' %}
+                      <span>- {{ variant.price | money }}</span>
+                    {% endif %}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+            {% render 'single-icon-caret' %}
+          </div>
+        {% else %}
+          <input
+            type="hidden"
+            name="id"
+            id="single-variant-select-{{product.id}}"
+            value="{{ product.variants.first.id }}"
+          >
+        {% endif %}
+        {% if product.selling_plan_groups %}
+          <input type="hidden" id="selling-plan-{{ product.id }}" name="selling_plan">
+          <script type="text/javascript">
+            const product{{ product.id }} = {{ product | json }};
+            const variantSelect{{ product.id }} = document.getElementById('single-variant-select-{{ product.id }}');
+            const spSelect{{ product.id }} = document.getElementById('selling-plan-{{ product.id }}');
+            variantSelect{{ product.id }}.addEventListener('change', populateSellingPlan{{ product.id }});
+            if (/complete|interactive|loaded/.test(document.readyState)) {
+                populateSellingPlan{{ product.id }}();
+            } else {
+                window.addEventListener('DOMContentLoaded', populateSellingPlan{{ product.id }});
+            }
+
+            function populateSellingPlan{{ product.id }}() {
+              const variant = product{{ product.id }}.variants.find(v => v.id.toString() === variantSelect{{ product.id }}.value);
+              if (!! variant && !! variant.selling_plan_allocations && variant.selling_plan_allocations.length > 0) {
+                spSelect{{ product.id }}.value = variant.selling_plan_allocations[0].selling_plan_id;
+              }
+            }
+          </script>
+        {% endif %}
+        <input
+          type="submit"
+          name="add"
+          value="{% render 'single-add-to-cart' %}"
+          class="single-collection-add-to-cart button"
+        >
+      </form>
+    {% endif %}
+  </div>
+{% endif %}

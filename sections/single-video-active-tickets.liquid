@@ -1,0 +1,106 @@
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+
+{% assign video_list = '' %}
+{% for order in customer.orders %}
+  {% for line_item in order.line_items %}
+    {% for variant in line_item.product.variants %}
+      {% unless video_list contains variant.metafields.single_livestream.livestream_id %}
+        {% assign image_url = line_item.image | img_url: 'grande' %}
+        {% assign id_list = variant.metafields.single_livestream.livestream_id |  split: ", " %}
+        {% for livestream_id in id_list %}
+          {% assign video_list = video_list
+            | append: ','
+            | append: livestream_id
+            | append: '|'
+            | append: image_url
+          %}
+        {% endfor %}
+      {% endunless %}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+
+{% unless video_list == empty %}
+  {% assign video_list_array = video_list | split: ',' %}
+  {% assign pages_available = false %}
+  {% for page in pages %}
+    {% for video in video_list_array %}
+      {% if video contains page.metafields.single_livestream.livestream_id %}
+        {% assign pages_available = true %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+  {% if pages_available == true %}
+    <div class="page-width">
+      <div class="single-grid-item tickets-grid">
+        <div class="single-col col-4_4">
+          <h2 class="h2" style="margin:0;">{{ 'single.tickets.section_title' | t }}</h2>
+        </div>
+        {% paginate pages by 50 %}
+          {% for page in pages %}
+            {% for video in video_list_array %}
+              {% if video contains page.metafields.single_livestream.livestream_id %}
+                {% assign video_parts = video | split: '|' %}
+                <div class="single-col col-1_4">
+                  <a class="single-video-card" href="{{ page.url }}">
+                    <img src="{{ video_parts[1] }}">
+                    <h4 class="single-video-title">{{ page.title }}</h4>
+                  </a>
+                </div>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+          <div class="single-col col-4_4">
+            {{ paginate | default_pagination }}
+          </div>
+        {% endpaginate %}
+      </div>
+    </div>
+  {% endif %}
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Single - Active Tickets",
+  "locales": {
+    "en": {
+      "single": {
+        "tickets": {
+          "section_title": "Tickets & Rentals"
+        }
+      }
+    },
+    "fr": {
+      "single": {
+        "tickets": {
+          "section_title": "Billets et locations"
+        }
+      }
+    },
+    "es": {
+      "single": {
+        "tickets": {
+          "section_title": "Entradas y alquileres"
+        }
+      }
+    },
+    "de": {
+      "single": {
+        "tickets": {
+          "section_title": "Eintrittskarten & Verleih"
+        }
+      }
+    },
+    "pt-BR": {
+      "single": {
+        "tickets": {
+          "section_title": "Ingressos e Aluguéis"
+        }
+      }
+    }
+  }
+}
+{% endschema %}

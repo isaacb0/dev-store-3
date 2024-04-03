@@ -1,0 +1,426 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+<style>
+  body {
+    padding-bottom: 90px;
+  }
+  @media screen and (max-width: 750px) {
+    body {
+      padding-bottom: 118px;
+    }
+  }
+</style>
+<div
+  class="single-footer-player"
+  style="background-color:{{ section.settings.player_bg }}; color:{{ section.settings.text_color }};"
+>
+  <div
+    class="single-col col-1_4"
+    id="main_info"
+  >
+    <div class="track-thumbnail">
+      <img src="{{ product.featured_image.src | img_url: '120x120' }}" loading="lazy" height="60" width="60">
+    </div>
+    <div class="track-info">
+      <span class="track-title"></span>
+      <span class="track-artist"></span>
+    </div>
+  </div>
+
+  <div
+    class="single-col col-2_4"
+    id="progress"
+  >
+    <div
+      id="waveform"
+      class="track-waveform"
+    ></div>
+  </div>
+
+  <div
+    class="single-col col-1_4"
+    id="controls"
+  >
+    <div class="track-details small">
+      <div class="track-time">
+        <span class="elapsed">00:00</span>
+        <span class="divider">/ </span>
+        <span class="remaining">00:00</span>
+      </div>
+      <div
+        class="track-meta"
+        style="display:none;"
+      >
+        <span class="track-tuning"></span>
+        <span style="opacity: .25;">•</span>
+        <span class="track-bpm"></span>
+      </div>
+    </div>
+    <div class="player-controls">
+      <span class="prev material-icons"> skip_previous </span>
+      <span
+        class="play material-icons"
+        id="playPause"
+      >
+        <span id="play">play_circle_outline</span>
+        <span
+          id="pause"
+          style="display: none;"
+          >pause_circle_outline</span
+        >
+      </span>
+      <span class="next material-icons"> skip_next </span>
+    </div>
+
+    {% unless shop.metafields.single_inc.whitelabel_enabled.value == true %}
+      <div class="powered-by-logo">
+        <a href="https://single.xyz" target="_blank" rel="noopener">
+          <img src="{{ 'single-logo-only.svg' | asset_url }}" loading="lazy" height="30" width="30">
+        </a>
+      </div>
+    {% endunless %}
+  </div>
+</div>
+
+<script src="https://unpkg.com/wavesurfer.js@6.6.3"></script>
+<script>
+  var ignoreSilenceModeProcessed = false;
+  function ignoreSilenceMode() {
+      if (ignoreSilenceModeProcessed) {
+          return;
+      }
+      // Set the src to a short bit of url encoded as a silent mp3
+      // NOTE The silence MP3 must be high quality, when web audio sounds are played
+      // in parallel the web audio sound is mixed to match the bitrate of the html sound
+      // 0.01 seconds of silence VBR220-260 Joint Stereo 859B
+      const audioData = "data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////8AAABhTEFNRTMuMTAwA8MAAAAAAAAAABQgJAUHQQAB9AAAAnGMHkkIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxAADgnABGiAAQBCqgCRMAAgEAH///////////////7+n/9FTuQsQH//////2NG0jWUGlio5gLQTOtIoeR2WX////X4s9Atb/JRVCbBUpeRUq//////////////////9RUi0f2jn/+xDECgPCjAEQAABN4AAANIAAAAQVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==";
+
+      // disable iOS Airplay (setting the attribute in js doesn't work)
+      let tmp = document.createElement("div");
+      tmp.innerHTML = '<audio x-webkit-airplay="deny"></audio>';
+
+      let audioSilentMode = tmp.children.item(0);
+      audioSilentMode.src = audioData;
+      audioSilentMode.preload = "auto";
+      audioSilentMode.type = "audio/mpeg";
+      audioSilentMode.disableRemotePlayback = true;
+
+      // play
+      audioSilentMode.play();
+
+      ignoreSilenceModeProcessed = true;
+  };
+
+  var singleAlbumPlayer = {
+      // Declare vars
+      links: document.querySelectorAll('#playlist a'),
+      currentTrack: 0,
+      currentTrackData: false,
+      hasLoaded: false,
+      wavesurfer: WaveSurfer.create({
+          container: '#waveform',
+          waveColor: '{{ section.settings.wave_color }}',
+          progressColor: '{{ section.settings.progress_color }}',
+          height: '60',
+          barHeight: '1',
+          barWidth: '3',
+          barRadius: 3,
+          cursorWidth: '0',
+          mediaControls: 'true',
+          responsive: 'true',
+          hideScrollbar: 'true'
+      }),
+
+      addEventListeners: function addEventListeners() {
+          var self = this;
+
+          // Transform URLs
+          // Add play button event listeners
+          Array.prototype.forEach.call(this.links, function (link, index) {
+              if(link.dataset.previewLink !== '') {
+                  // set the actual preview link
+                  $.ajax({
+                      url: link.dataset.previewLink,
+                      dataType: 'text',
+                      type: 'GET',
+                      success: function(previewURL) {
+                          link.dataset.href = previewURL
+
+                          var parentLink = link.parentElement
+                          if(parentLink && parentLink.href) {
+                              parentLink.href = previewURL
+                          }
+
+                          link.addEventListener('click', function (e) {
+                              e.preventDefault();
+                              self.setCurrentSong(index);
+                          });
+
+                          if(index == 0) {
+                              // Load the first track
+                              self.setCurrentSong(0);
+                          }
+                      },
+                      error: function(XMLHttpRequest) {
+                          console.log('Error playing track');
+                      }
+                  })
+              }
+          });
+
+          // playPause
+          document.querySelector('#playPause').addEventListener('click', function () {
+              if (!ignoreSilenceModeProcessed) {
+                  ignoreSilenceMode();
+              }
+              self.wavesurfer.playPause();
+          });
+
+          // prev/next watchers
+          document.querySelector('.player-controls .prev').addEventListener('click', function() {
+              self.setCurrentSong((self.currentTrack - 1) <= 0 ? (self.links.length - 1) : (self.currentTrack - 1));
+          });
+
+          document.querySelector('.player-controls .next').addEventListener('click', function() {
+              self.setCurrentSong((self.currentTrack + 1) > (self.links.length - 1) ? 0 : (self.currentTrack + 1));
+          });
+
+          // individual product atc
+          var atcs = document.querySelectorAll('.single-tracklist .single-track-add-to-cart')
+          atcs.forEach(function(atc) {
+              atc.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+
+                  var variantId = atc.dataset.variantId;
+                  var trackId = atc.dataset.trackId;
+                  self.addTrackToCart(variantId, trackId);
+              });
+          });
+      },
+
+      addWavesurferListeners: function addWavesurferListeners() {
+          var self = this;
+
+          // Toggle play/pause text
+          this.wavesurfer.on('play', function () {
+              document.querySelector('#play').style.display = 'none';
+              document.querySelector('#pause').style.display = '';
+
+              var playlistIcons = document.querySelectorAll('#playlist .single-play-icon i');
+              if(playlistIcons.length > 0) {
+                  Array.prototype.forEach.call(playlistIcons, function (icon, index) {
+                      icon.innerHTML = 'play_circle_outline';
+                  });
+              }
+
+              var trackId = self.currentTrackData.trackId;
+              var playPauseInline = document.querySelector('[data-track-id="' + trackId + '"] .single-play-icon i')
+              if(playPauseInline) playPauseInline.innerHTML = 'pause_circle_outline'
+          });
+
+          this.wavesurfer.on('pause', function () {
+              document.querySelector('#play').style.display = 'block';
+              document.querySelector('#pause').style.display = 'none';
+
+              var playlistIcons = document.querySelectorAll('#playlist .single-play-icon i')
+              if(playlistIcons.length > 0) {
+                  Array.prototype.forEach.call(playlistIcons, function (icon, index) {
+                      icon.innerHTML = 'play_circle_outline';
+                  });
+              }
+          });
+
+          // When wavesurfer loads a new track
+          this.wavesurfer.on('audioprocess', function() {
+              var totalTime = self.wavesurfer.getDuration(),
+                  currentTime = self.wavesurfer.getCurrentTime();
+
+              if (self.wavesurfer.isPlaying()) {
+                  document.querySelector('.track-time .elapsed').innerHTML = self.toHHMMSS(currentTime);
+                  document.querySelector('.track-time .remaining').innerHTML = self.toHHMMSS(totalTime);
+              }
+          });
+
+          // Update time on seek
+          this.wavesurfer.on('seek', function (position) {
+              document.querySelector('.track-time .elapsed').innerHTML = self.toHHMMSS(self.wavesurfer.getCurrentTime());
+          });
+
+          // Play on audio load
+          this.wavesurfer.on('ready', function () {
+              if(self.hasLoaded) {
+                  self.wavesurfer.play();
+              } else {
+                  self.hasLoaded = true;
+              }
+
+              document.querySelector('.track-time .elapsed').innerHTML = '00:00';
+              document.querySelector('.track-time .remaining').innerHTML = self.toHHMMSS(self.wavesurfer.getDuration());
+          });
+
+          this.wavesurfer.on('error', function (e) {
+              console.warn(e);
+          });
+
+          // Go to the next track on finish
+          this.wavesurfer.on('finish', function () {
+              self.setCurrentSong((self.currentTrack + 1) % self.links.length);
+          });
+      },
+
+      setCurrentSong: function setCurrentSong(index) {
+          if(index != this.currentTrack || !this.hasLoaded) {
+              this.links[this.currentTrack].classList.remove('active');
+
+              this.currentTrack = index;
+              this.currentTrackData = this.links[this.currentTrack].dataset;
+
+              this.links[this.currentTrack].classList.add('active');
+
+              document.querySelector('.track-title').innerHTML = this.currentTrackData.title;
+              document.querySelector('.track-artist').innerHTML = this.currentTrackData.artist;
+              document.querySelector('.track-tuning').innerHTML = this.currentTrackData.tuning;
+              document.querySelector('.track-bpm').innerHTML = this.currentTrackData.bpm;
+
+
+              this.wavesurfer.load(this.currentTrackData.href);
+          } else {
+              if (!ignoreSilenceModeProcessed) {
+                  ignoreSilenceMode();
+              }
+              this.wavesurfer.playPause();
+          }
+      },
+
+      // Add track to cart
+      addTrackToCart: function addTrackToCart(variantId, trackId, e) {
+          if(e) { e.preventDefault(); e.stopPropagation(); }
+
+          $.post('/cart/add.json', { quantity: 1, id: variantId },
+              function (variant) {
+                  var els = $('.single-add-track-to-cart-icon-' + trackId);
+                  els.each(function(i) {
+                      $(this).replaceWith('<a href="/cart"><i class="material-icons animated pulse">check_circle</i></a>');
+                  });
+
+                  $.get('/cart.json', function (cart) {
+                      var cartElem = $('.cart-count-bubble');
+                      if (!cartElem) {
+                          return;
+                      }
+                      cartElem.find('span:first-of-type').text(cart.item_count);
+                      cartElem.find('span:last-of-type').text(cart.item_count + ' items');
+
+                  });
+              }).fail(function () {
+            {% comment %} // This happens if track fails to add. --> {% endcomment %}
+              alert('Failed to add track to cart!');
+          });
+      },
+
+      addAlbumToCart: function addAlbumToCart(trackId, e) {
+          if(e) { e.preventDefault(); e.stopPropagation(); }
+
+          document.querySelector('form[action="/cart/add"] button[id="AddToCart"]').click();
+
+          var els = $('.single-add-track-to-cart-icon-' + trackId);
+          els.each(function(i) {
+              $(this).replaceWith('<a href="/cart"><i class="material-icons animated pulse">check_circle</i></a>');
+          });
+
+          setTimeout($.get('/cart.json', function (cart) {
+              var cartElem = $('.cart-count-bubble');
+              if (!cartElem) {
+                  return;
+              }
+              cartElem.find('span:first-of-type').text(cart.item_count);
+              cartElem.find('span:last-of-type').text(cart.item_count + ' items');
+
+          }), 1000);
+      },
+
+      // Format time
+      toHHMMSS: function toHHMMSS(secs) {
+          var sec_num = parseInt(secs, 10)
+          var hours   = Math.floor(sec_num / 3600)
+          var minutes = Math.floor(sec_num / 60) % 60
+          var seconds = sec_num % 60
+
+          return [hours,minutes,seconds]
+              .map(v => v < 10 ? "0" + v : v)
+              .filter((v,i) => v !== "00" || i > 0)
+              .join(":")
+      },
+
+      init: function() {
+          this.addEventListeners()
+          this.addWavesurferListeners()
+      }
+  }
+
+  singleAlbumPlayer.init()
+</script>
+
+{% schema %}
+{
+  "name": "Audio Player",
+  "settings": [
+    {
+      "type": "color",
+      "id": "player_bg",
+      "label": "Player Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "Wave Color",
+      "default": "#444444"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Progress Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "#000000"
+    }
+  ]
+}
+{% endschema %}

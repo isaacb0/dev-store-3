@@ -1,0 +1,94 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+<style>
+  #inventory {
+    margin-bottom: 4em;
+  }
+  #inventory h3 {
+    margin-bottom: 0.5em;
+  }
+  .inventory-bar {
+    background: #eeeeee;
+    width: 100%;
+    border-radius: 30px;
+    overflow: hidden;
+  }
+  .filler {
+    background: rgb(129, 38, 180);
+    background: linear-gradient(130deg, rgba(231, 63, 139, 1) 0%, rgba(129, 38, 180, 1) 100%);
+    text-align: center;
+    text-indent: 5px;
+    color: white;
+    font-size: 0.75em;
+  }
+
+  #powered {
+    display: flex;
+    justify-content: end;
+  }
+
+  .by {
+    font-size: 0.75em;
+    font-weight: bolder;
+    letter-spacing: 0;
+  }
+</style>
+
+{% for variant in product.variants %}
+  {% if variant.metafields.single_nft.is_nft == 'true' %}
+    {% assign available = variant.inventory_quantity %}
+    {% assign total_inventory = variant.metafields.single_nft.product_supply %}
+  {% endif %}
+{% endfor %}
+{% assign claimed_count = total_inventory | minus: available %}
+{% assign denom = total_inventory | times: 1.0 %}
+{% assign bar_width = claimed_count | divided_by: denom | times: 100 | round: 2 %}
+
+{% if total_inventory > 0 %}
+  <div id="inventory">
+    <h3>{{ available }} / {{ total_inventory }}</h3>
+    {% for variant in product.variants %}
+      <div class="inventory-item">
+        <div class="inventory-bar">
+          <div class="filler filler-{{ product.id }}">
+            <span>{{ bar_width }}%</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if variant.inventory_quantity == 0 %}
+    <style>
+      .filler-{{ product.id }} {
+        background: none;
+        color: black;
+      }
+    </style>
+  {% else %}
+    <style>
+      .filler-{{ product.id }} {
+        width: {{ bar_width }}%;
+      }
+    </style>
+  {% endif %}
+{% endif %}

@@ -1,0 +1,30 @@
+<div class="single-card single-card-large"
+        {% if key_acquisition_url %}
+            onclick="location.href='{{ key_acquisition_url }}';"
+        {% endif %}
+>
+    <div class="single-card-info">
+        {% if denial_reason == 'NO_KEY_FOUND' %}
+            <h3 style="margin-top: 0;">{{ count }} More Item(s) Available</h3>
+            <p class="single-album-artist single-card-description">You don't currently have access to these items.</p>
+            <button class="btn button" onclick="location.href='{{ key_acquisition_url }}';">Buy Access Now</button>
+        {% elsif denial_reason == 'INSUFFICIENT_USES_AVAILABLE' %}
+            <h3 style="margin-top: 0;">{{ count }} More Item(s) Available</h3>
+            <p class="single-album-artist single-card-description">You'll need to purchase additional access in order to
+                see the rest.</p>
+            <button class="btn button" onclick="location.href='{{ key_acquisition_url }}';">Buy Access Now</button>
+        {% else %}
+            <h3 style="margin-top: 0;">
+                {% if login_types.size > 1 %}
+                    Unlock below
+                {% elsif login_types contains 'CUSTOMER' %}
+                    Unlock by Logging In
+                {% elsif login_types contains 'WALLET' %}
+                    Unlock by Connecting Wallet
+                {% endif %}
+            </h3>
+            <p class="single-album-artist single-card-description">{{ count }} Item(s) Available</p>
+            {% render 'single-login-buttons', login_types: login_types %}
+        {% endif %}
+    </div>
+</div>

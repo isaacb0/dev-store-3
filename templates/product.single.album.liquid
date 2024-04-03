@@ -1,0 +1,294 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% comment %}
+  <!-- Single App Styles -->
+{% endcomment %}
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-music.css' | asset_url | stylesheet_tag }}
+
+{% comment %}
+  <!-- jQuery -->
+{% endcomment %}
+{{ '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js' | script_tag }}
+
+{% comment %}
+  <!-- Release Date Logic for Presale products -->
+{% endcomment %}
+{% capture releaseDateString %}{{ product.metafields.album.release_date }}{% endcapture %}
+{% assign dateParts = releaseDateString | split: '/' %}
+{% capture releaseDateFormatted -%}
+  {{- dateParts[2] }}-{{ dateParts[0] }}-{{ dateParts[1] -}}
+{%- endcapture %}
+{% assign releaseDate = releaseDateFormatted | date: '%s' | plus: 0 %}
+{% assign now = 'now' | date: '%s' | plus: 0 %}
+{% capture presale -%}
+  {%- if releaseDate > now %}true{% endif -%}
+{%- endcapture %}
+
+<div
+  class="single-music-product"
+  itemscope
+  itemtype="http://schema.org/Product"
+>
+  <div class="single-grid-item">
+    <!-- Product Metatags -->
+    <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+    <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+    <meta property="og:title" content="{{ product.title }}">
+    <meta property="og:image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+    <meta property="og:url" content="{{ shop.url }}{{ product.url }}">
+    <!-- Left Column -->
+    <div class="single-col col-2_4">
+      <div class="single-album-art">
+        <img
+          src="{{ product.featured_image.src | img_url: 'grande' }}"
+          alt="{{ featured_img_alt }}"
+        >
+      </div>
+      {% if product.metafields.album.track_count > 1 %}
+        {% unless product.metafields.album.confidential_release_date == 'true' %}
+          {% if presale == 'true' %}
+            <div class="single-album-release-date">
+              Pre-order: Expected {{ releaseDateFormatted | time_tag: '%B %d, %Y' }}
+            </div>
+            <div class="single-presale-note">
+              Pre-order contents may change without notice. You'll receive items from this pre-order as they become
+              available.
+            </div>
+          {% else %}
+            <div class="single-album-release-date">
+              <p>Release Date: {{ releaseDateFormatted | time_tag: '%B %d, %Y' }}</p>
+            </div>
+          {% endif %}
+        {% endunless %}
+        <div
+          class="single-album-description desktop-desc"
+          itemprop="description"
+        >
+          <p>Downloads include choice of MP3, WAV, or FLAC</p>
+          <p>{{ product.description }}</p>
+        </div>
+      {% endif %}
+    </div>
+    <!-- End Left Column -->
+    <!-- Right Column -->
+    <div class="single-col col-2_4">
+      <!-- Begin Single Header -->
+      <div class="single-album-header">
+        <h1
+          class="single-album-title"
+          itemprop="name"
+        >
+          {% if product.metafields.album.featured_artist_names %}
+            <span>{{- product.title }} (feat. {{ product.metafields.album.featured_artist_names }})</span>
+          {% else %}
+            <span>{{ product.title }}</span>
+          {% endif %}
+        </h1>
+        <p class="single-album-artist">{{ product.metafields.album.artist_name }}</p>
+        {% if product.variants.size == 1 %}
+          <h3 class="single-album-price">
+            {% if product.metafields.album.track_count == 1 %}
+              {% assign collection_key = product.metafields.album.collection_handle %}
+              {% assign track = collections[collection_key].products.first %}
+              {% capture trackTime -%}
+                {%- if track.metafields.track.track_time != '' -%}
+                  <span class="single-track-preview-timer">
+                    {{- track.metafields.track.track_time -}}
+                  </span>
+                {%- endif -%}
+              {%- endcapture %}
+              {% capture previewAvailable -%}
+                {%- if track.metafields.track.preview == 'true' and presale != 'true' %}true{% endif -%}
+              {%- endcapture %}
+              {% assign previewLink = track.metafields.track.preview_link %}
+              {% assign tuning = track.metafields.track.tuning | default: 'C#' %}
+              {% assign bpm = track.metafields.track.bpm | default: '120bpm' %}
+
+              {% for variant in track.variants %}
+                {% if variant.available %}
+                  {% if variant == track.selected_or_first_available_variant %}
+                    {% assign track_variant = variant.id %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+
+              {% if previewAvailable == 'true' %}
+                <div id="playlist" style="display: inline-block">
+                  <a
+                    class="single-track {{previewClass}} {{availableClass}} js-no-transition"
+                    data-track-id="{{ track.id }}"
+                    data-variant-id="{{ track_variant }}"
+                    data-href=""
+                    data-preview-link="{{ previewLink | escape }}"
+                    data-tuning="{{ tuning | escape }}"
+                    data-bpm="{{ bpm | escape }}"
+                    data-title="{% if track.metafields.track.featured_artist_names %}{{ track.title }} (feat. {{track.metafields.track.featured_artist_names}}){% else %}{{ track.title | escape }}{% endif %}"
+                    data-artist="{{ product.metafields.album.artist_name | escape }}"
+                    data-price="{{ track.price | money }}"
+                    data-album-track-count="{{ product.metafields.album.track_count }}"
+                    style="display: inline-block"
+                  >
+                    <span
+                      class="single-album-track-play"
+                      data-track-id="{{ track.id }}"
+                      data-variant-id="{{ track_variant }}"
+                      data-href=""
+                      data-preview-link="{{ previewLink | escape }}"
+                      data-tuning="{{ tuning | escape }}"
+                      data-bpm="{{ bpm | escape }}"
+                      data-title="{% if track.metafields.track.featured_artist_names %}{{ track.title }} (feat. {{track.metafields.track.featured_artist_names}}){% else %}{{ track.title | escape }}{% endif %}"
+                      data-artist="{{ product.metafields.album.artist_name | escape }}"
+                      data-album-track-count="{{ product.metafields.album.track_count }}"
+                      data-price="{{ track.price | money }}"
+                    >
+                      <i class="material-icons">play_circle_outline</i>
+                    </span>
+                  </a>
+                </div>
+              {% endif %}
+            {% endif %}
+            <span>{{ product.variants.first.price | money }}</span>
+            <span class="single-track-time">{{ trackTime }}</span>
+          </h3>
+        {% endif %}
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+        <!-- Add to Cart -->
+        <div class="single-product-add-to-cart-btns">
+          {% form 'product', product %}
+            {% if product.variants.size > 1 %}
+              <div class="single-field-label">Select Format</div>
+              <select
+                name="id"
+                class="single-select-field"
+              >
+                {% for variant in product.variants %}
+                  {% if variant.available == true %}
+                    <option value="{{variant.id}}">{{ variant.title }} - {{ variant.price | money }}</option>
+                  {% else %}
+                    <option disabled="disabled">{{ variant.title }} - sold out!</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            {% else %}
+              <input
+                name="id"
+                value="{{ product.variants.first.id }}"
+                type="hidden"
+              >
+            {% endif %}
+            <div class="single-album-add-to-cart">
+              <button
+                type="submit"
+                name="add"
+                id="AddToCart"
+                class="btn btn--secondary-accent button button--secondary"
+              >
+                <span id="AddToCartText">
+                  {% render 'single-add-to-cart' %}
+                </span>
+              </button>
+              {{ form | payment_button }}
+            </div>
+          {% endform %}
+        </div>
+      </div>
+      <!-- End Single Header -->
+      <!-- Begin Tracklist -->
+      {% assign collection_key = product.metafields.album.collection_handle %}
+      {% assign products = collections[collection_key].products %}
+      {% capture productsExist -%}
+        {%- if products != '' and products.length != 0 %}true{% endif -%}
+      {%- endcapture %}
+      {% if product.metafields.album.track_count != 1 and productsExist == 'true' %}
+        <div
+          id="playlist"
+          class="single-tracklist"
+        >
+          {% for track in products %}
+            {% if track.type == 'Digital Track' %}
+              {% include 'single-music-track' with track %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      <!-- End Tracklist -->
+      <!-- Single Track Info -->
+      {% if product.metafields.album.track_count == 1 %}
+        {% unless product.metafields.album.confidential_release_date == 'true' %}
+          {% if presale == 'true' %}
+            <div class="single-album-release-date">
+              Pre-order: Expected {{ releaseDateFormatted | time_tag: '%B %d, %Y' }}
+            </div>
+            <div class="single-presale-note">
+              Pre-order contents may change without notice. You'll receive items from this pre-order as they become
+              available.
+            </div>
+          {% else %}
+            <div class="single-album-release-date">
+              <p>Release Date: {{ releaseDateFormatted | time_tag: '%B %d, %Y' }}</p>
+            </div>
+          {% endif %}
+        {% endunless %}
+        <div
+          class="single-album-description desktop-desc"
+          itemprop="description"
+        >
+          <p>Downloads include choice of MP3, WAV, or FLAC</p>
+          <p>{{ product.description }}</p>
+        </div>
+      {% endif %}
+      <!-- Mobile Description -->
+      <div
+        class="single-album-description mobile-desc"
+        itemprop="description"
+      >
+        <p>Downloads include choice of MP3, WAV, or FLAC</p>
+        <p>{{ product.description }}</p>
+      </div>
+    </div>
+    <!-- End Right Column -->
+  </div>
+  <!-- End Inner Wrap -->
+</div>
+<!-- End Product Wrap -->
+
+<!-- Footer Player -->
+{% for track in products %}
+  {% capture trackReleaseDateString %}{{ track.metafields.track.release_date }}{% endcapture %}
+  {% assign trackDateParts = trackReleaseDateString | split: '/' %}
+  {% capture trackReleaseDateFormatted -%}
+    {{- trackDateParts[2] }}-{{ trackDateParts[0] }}-{{ trackDateParts[1] -}}
+  {%- endcapture %}
+  {% assign trackReleaseDate = trackReleaseDateFormatted | date: '%s' | plus: 0 %}
+  {%- if trackReleaseDate <= now %}
+    {%- if track.metafields.track.preview == 'true' %}
+      {% assign enablePlayer = 'true' %}
+    {% endif -%}
+  {% endif -%}
+{% endfor %}
+
+{% if enablePlayer == 'true' %}
+  {% section 'single-music-footer-player' %}
+{% endif %}
+
+{% include 'single-base-ajaxify' %}

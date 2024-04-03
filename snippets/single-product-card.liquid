@@ -1,0 +1,39 @@
+{% assign product_pieces = product_input | split: '|' %}
+{% assign product = all_products[product_pieces[0]] %}
+
+{% if product and product != blank %}
+    <div class="single-card single-card-large single-accessibility" title="{{ product.title }}"
+         onclick="location.href='/products/{{ product.handle }}';">
+        <div class="single-card-image">
+            {% render 'single-image', image: product.images.first %}
+        </div>
+        <div class="single-card-info">
+            {% if show_title == 'true' %}<h3>{{ product.title }}</h3>{% endif %}
+            {% if show_description == 'true' %}<div class="single-card-description">{{ product.description }}</div>{% endif %}
+            {% if show_badge == 'true' %}
+                {% if product.available %}
+                    <div class="card__badge">
+                  <span class="badge badge--bottom-left">
+                    {% if product.price == 0 %}
+                        FREE
+                    {% elsif settings.currency_code_enabled %}
+                        {{ product.price | money_with_currency }}
+                    {% else %}
+                        {{ product.price | money }}
+                    {% endif %}
+                  </span>
+                    </div>
+                {% else %}
+                    <div class="card__badge">
+                        <span class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}">{{ 'products.product.sold_out' | t }}</span>
+                    </div>
+                {% endif %}
+            {% endif %}
+            {% if required_amount and required_amount > "1" %}
+                <div class="card__badge">
+                    <span class="badge badge--bottom-left">{{ required_amount }} Required</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

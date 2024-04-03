@@ -1,0 +1,82 @@
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+
+<style>
+    .single-app-grid {
+        margin: 0 auto;
+        display: flex;
+        box-sizing: border-box;
+        flex-wrap: wrap;
+    }
+
+    .single-app-grid-item {
+        height: 100%;
+    }
+</style>
+
+{% assign block_widths_string = section.settings.block_widths | newline_to_br | replace: "<br />", "," | replace: " ", "," | replace: "
+", "," %}
+{% for i in (0..block_widths_string.size) %}
+    {% unless block_widths_string contains ",," %}
+        {% break %}
+    {% endunless %}
+    {% assign block_widths_string = block_widths_string | replace: ",,", "," %}
+{% endfor %}
+{% assign block_widths = block_widths_string  | split: "," %}
+
+<div class="single-app-grid {% if section.settings.include_margins %}page-width{% endif %}">
+    {%- for block in section.blocks -%}
+        {% assign block_width = 1 %}
+        {% if forloop.index0 < block_widths.size %}
+            {% unless block_widths[forloop.index0] == empty or block_widths[forloop.index0] == "" %}
+                {% assign block_width = block_widths[forloop.index0] %}
+            {% endunless %}
+        {% endif %}
+        {% if block_width > section.settings.column_count %}
+            {% assign block_width = section.settings.column_count %}
+        {% endif %}
+        <div class="single-app-grid-item col-{{ block_width }}_{{ section.settings.column_count }}">
+            {% render block %}
+        </div>
+    {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "App Grid",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "include_margins",
+      "default": true,
+      "label": "t:sections.apps.settings.include_margins.label"
+    },
+    {
+      "type": "range",
+      "id": "column_count",
+      "label": "Number of columns",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "textarea",
+      "id": "block_widths",
+      "label": "Block Widths",
+      "info": "The width of each block in the section"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "App Grid"
+    }
+  ]
+}
+{% endschema %}

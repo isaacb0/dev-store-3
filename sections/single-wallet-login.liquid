@@ -1,0 +1,87 @@
+<style>
+  .single-gate {
+    text-align: center;
+    padding: 2em;
+  }
+
+  .button {
+    margin: 0 auto;
+  }
+</style>
+
+<!-- Anonymous -->
+<section class="single-gate single-gate-login" hidden>
+  <h2>
+    CONNECT_WALLET_TITLE
+  </h2>
+  <p>{{ 'single.login.subTitle' | t }}</p>
+  <button class="single-login-button btn button">{{ 'single.login.connect_wallet' | t }}</button>
+</section>
+
+<!-- Waiting For Approval -->
+<section class="single-gate single-gate-waiting" hidden>
+  <h2>{{ 'single.login.approve' | t }}</h2>
+  <p>{{ 'single.login.subApprove' | t }}</p>
+</section>
+
+{% schema %}
+{
+  "locales": {
+    "en": {
+      "single": {
+        "login": {
+          "title": "Connect wallet to continue...",
+          "subTitle": "This page can be unlocked with a permitted NFT.",
+          "approve": "Please Approve Signature Request",
+          "subApprove": "You will be redirected after wallet connection is approved.",
+          "connect_wallet": "Connect Wallet"
+        }
+      }
+    },
+    "fr": {
+      "single": {
+        "login": {
+          "title": "Connectez le portefeuille pour continuer...",
+          "subTitle": "Cette page peut être déverrouillée avec un NFT autorisé.",
+          "approve": "Veuillez approuver la demande de signature",
+          "subApprove": "Vous serez redirigé une fois la connexion au portefeuille approuvée.",
+          "connect_wallet": "Connecter le portefeuille"
+        }
+      }
+    },
+    "es": {
+      "single": {
+        "login": {
+          "title": "Conecte la billetera para continuar...",
+          "subTitle": "Esta página se puede desbloquear con un NFT permitido.",
+          "approve": "Por favor, apruebe la solicitud de firma",
+          "subApprove": "Será redirigido después de que se apruebe la conexión de la billetera.",
+          "connect_wallet": "Conectar billetera"
+        }
+      }
+    },
+    "de": {
+      "single": {
+        "login": {
+          "title": "Schließen Sie die Brieftasche an, um fortzufahren...",
+          "subTitle": "Diese Seite kann mit einem zugelassenen NFT freigeschaltet werden.",
+          "approve": "Bitte genehmigen Sie die Signaturanforderung",
+          "subApprove": "Sie werden umgeleitet, nachdem die Wallet-Verbindung genehmigt wurde.",
+          "connect_wallet": "Brieftasche verbinden"
+        }
+      }
+    },
+    "pt-BR": {
+      "single": {
+        "login": {
+          "title": "Conecte a carteira para continuar...",
+          "subTitle": "Esta página pode ser desbloqueada com um NFT permitido.",
+          "approve": "Por favor, aprove o pedido de assinatura",
+          "subApprove": "Você será redirecionado após a aprovação da conexão com a carteira.",
+          "connect_wallet": "Conectar Carteira"
+        }
+      }
+    }
+  }
+}
+{% endschema %}

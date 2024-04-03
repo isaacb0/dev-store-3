@@ -1,0 +1,55 @@
+{{ 'single-video-chat.css' | asset_url | stylesheet_tag }}
+{{ '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js' | script_tag }}
+
+<style>
+  .popup {
+    background: {{ background_color }};
+    color: {{ font_color }};
+  }
+</style>
+
+<div id="chat-login-modal" class="pulogin single-hidden">
+  <div class="popup">
+    <button onClick="closeModal('chat-login-modal')" class="close" href="#">&times;</button>
+    <div class="content">
+      {% capture login_section %}{% section 'single-base-login' %}{% endcapture %}
+      {{ login_section | replace: 'REGISTER_CLASSES', 'single-hidden' | replace: 'CANCEL_SIGNUP_LINK_CLASSES', 'single-hidden' | replace: 'SIGNUP_LINK_CLASSES', 'single-hidden' | replace: 'LOGIN_TITLE', 'Login' }}
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(id) {
+    if (id === 'chat-register-modal') {
+      showRegisterForm();
+    } else {
+      showLoginForm();
+    }
+    const modal = document.getElementById('chat-login-modal');
+    modal.classList.remove('single-hidden');
+    setupForms('{{ register_url }}', '{{ login_url }}');
+  }
+
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.add('single-hidden');
+  }
+
+  function handleIframeMessage(event) {
+    if (event.data.type === 'openChatModal') {
+      openModal(event.data.id);
+    }
+  }
+
+  function chatModalSetup() {
+    const loginUrl = getUrlOrDefault('{{ login_url }}');
+    document.querySelectorAll('[name="return_to"]').forEach((node) => (node.value = loginUrl));
+    window.addEventListener('message', (e) => handleIframeMessage(e), false);
+  }
+
+  if (/complete|interactive|loaded/.test(document.readyState)) {
+    chatModalSetup();
+  } else {
+    window.addEventListener('DOMContentLoaded', chatModalSetup);
+  }
+</script>

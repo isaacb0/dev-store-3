@@ -1,0 +1,1 @@
+{"type":"custom.popups","name":"t:sections.popup-group.name","sections":{"newsletter-popup":{"type":"newsletter-popup","settings":{}},"age-verification-popup":{"type":"age-verification-popup","disabled":true,"settings":{}}},"order":["newsletter-popup","age-verification-popup"]}

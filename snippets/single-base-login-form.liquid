@@ -1,0 +1,458 @@
+{% comment %}
+  <!--
+  Copyright (c) 2023 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+<style>
+  .single-hidden {
+    display: none;
+  }
+
+  input:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .single-login {
+    padding: 2em;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .single-login form {
+    width: 100%;
+    max-width: 700px;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+
+  .single-login input {
+    width: 100%;
+    padding: 0.75em;
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid;
+  }
+
+  .single-login .login-head {
+    margin: 0;
+  }
+
+  .single-field {
+    margin-bottom: 0.75em !important;
+    text-align: left;
+  }
+
+  .single-field label {
+    font-size: 0.9em;
+    margin: 0.5em 0;
+    display: block;
+    z-index: 2;
+  }
+
+  .accepts-marketing {
+    width: auto;
+    margin-right: 0.5em;
+    vertical-align: middle;
+    padding-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .accepts-marketing input[type='checkbox'] {
+    width: auto;
+  }
+
+  .accepts-marketing label {
+    margin-bottom: 0;
+  }
+
+  .recover-links {
+    margin-top: 1em;
+  }
+
+  .single-login .recover-links .divider {
+    opacity: 0.5;
+  }
+
+  .single-login .recover-links a:hover {
+    text-decoration: underline;
+  }
+
+  .single-errors {
+    color: white;
+    background-color: #dd2d2d;
+  }
+</style>
+
+<section class="single-login">
+  {% comment %}
+    <!-- START #form-login -->
+  {% endcomment %}
+  <div id="form-login" class="single-form LOGIN_CLASSES">
+    <h2 class="login-head">
+      LOGIN_TITLE
+    </h2>
+    {% form 'customer_login', return_to: 'LOGIN_REDIRECT_URL' %}
+      <div class="single-errors">
+        {% if form.errors %}
+          {{ form_errors | default_errors }}
+        {% endif %}
+      </div>
+
+      <div class="single-field email">
+        <label for="email">{{ 'single.login.email' | t }}</label>
+        <input type="email" name="customer[email]" placeholder="{{ 'single.login.email' | t }}">
+      </div>
+      <div class="single-field password">
+        <label for="password">{{ 'single.login.password' | t }}</label>
+        <input type="password" name="customer[password]" placeholder="{{ 'single.login.password' | t }}">
+      </div>
+      <div class="single-submit">
+        <input type="submit" value="{{ 'single.login.sign_in' | t }}" class="btn button single-ignore">
+      </div>
+    {% endform %}
+    <div class="recover-links">
+      <span>
+        <a href="#" onclick="showRecoverForm(event)" id="ForgotPasswordLink">
+          {{- 'single.login.forgot_password' | t -}}
+        </a>
+      </span>
+      <span class="SIGNUP_LINK_CLASSES">
+        <span class="divider"> • </span>
+        <span>
+          <a href="#" onclick="showRegisterForm(event)" id="ShowRegister">{{ 'single.login.create_account' | t }}</a>
+        </span>
+      </span>
+    </div>
+  </div>
+  {% comment %}
+    <!-- END #form-login -->
+  {% endcomment %}
+
+  {% comment %}
+    <!-- START #form-recover -->
+  {% endcomment %}
+  <div id="form-recover" class="single-form single-hidden">
+    <h2 class="login-head">{{ 'single.recover_password.title' | t }}</h2>
+    <p>{{ 'single.recover_password.subtext' | t }}</p>
+    {% form 'recover_customer_password', return_to: 'LOGIN_REDIRECT_URL' %}
+      <div class="single-errors">
+        {% if form.errors %}
+          {{ form_errors | default_errors }}
+        {% endif %}
+      </div>
+
+      <div class="single-field email">
+        <label for="email">{{ 'single.login.email' | t }}</label>
+        <input type="email" name="email" placeholder="Email">
+      </div>
+      <div class="single-submit">
+        <input type="submit" value="{{ 'single.recover_password.submit' | t }}" class="btn button single-ignore">
+      </div>
+    {% endform %}
+    <div class="recover-links">
+      <span>
+        <a href="#" onclick="showLoginForm(event)" id="CancelRecoverPassword">
+          {{ 'single.recover_password.cancel' | t }}
+        </a>
+      </span>
+    </div>
+  </div>
+  {% comment %}
+    <!-- END #form-recover -->
+  {% endcomment %}
+
+  {% comment %}
+    <!-- START #form-register -->
+  {% endcomment %}
+  <div id="form-register" class="single-form REGISTER_CLASSES">
+    <div class="customer register">
+      <h2 class="login-head">{{ 'single.register.title' | t }}</h2>
+      {% form 'create_customer', return_to: 'SIGNUP_REDIRECT_URL' %}
+        <div class="single-errors">
+          {% if form.errors %}
+            {{ form_errors | default_errors }}
+          {% endif %}
+        </div>
+
+        <div class="single-field">
+          <label for="text">{{ 'single.register.first_name' | t }}</label>
+          <input
+                  type="text"
+                  name="customer[first_name]"
+                  id="RegisterForm-FirstName"
+                  {% if form.first_name %}
+                    value="{{ form.first_name }}"
+                  {% endif %}
+                  autocomplete="given-name"
+                  placeholder="{{ 'single.register.first_name' | t }}"
+          >
+        </div>
+        <div class="single-field">
+          <label for="text">{{ 'single.register.last_name' | t }}</label>
+          <input
+                  type="text"
+                  name="customer[last_name]"
+                  id="RegisterForm-LastName"
+                  {% if form.last_name %}
+                    value="{{ form.last_name }}"
+                  {% endif %}
+                  autocomplete="family-name"
+                  placeholder="{{ 'single.register.last_name' | t }}"
+          >
+        </div>
+        <div class="single-field">
+          <label for="email">{{ 'single.login.email' | t }}</label>
+          <input
+                  type="email"
+                  name="customer[email]"
+                  id="RegisterForm-email"
+                  {% if form.email %}
+                    value="{{ form.email }}"
+                  {% endif %}
+                  spellcheck="false"
+                  autocapitalize="off"
+                  autocomplete="email"
+                  aria-required="true"
+                  {% if form.errors contains 'email' %}
+                    aria-invalid="true"
+                    aria-describedby="RegisterForm-email-error"
+                  {% endif %}
+                  placeholder="{{ 'single.login.email' | t }}"
+          >
+        </div>
+        <div class="single-field">
+          <label for="password">{{ 'single.login.password' | t }}</label>
+          <input
+                  type="password"
+                  name="customer[password]"
+                  id="RegisterForm-password"
+                  aria-required="true"
+                  placeholder="{{ 'single.login.password' | t }}"
+          >
+        </div>
+
+        <div class="accepts-marketing">
+          <input type="hidden" name="customer[accepts_marketing]" value="false">
+          <input type="checkbox" name="customer[accepts_marketing]" checked>
+          <label for="accepts-marketing">{{ 'single.register.marketing' | t }}</label>
+        </div>
+        <input type="hidden" id="customer_tags" name="customer[tags]" value="created_via_single_app">
+        <div style="margin-top: 20px" class="submit">
+          <input
+                  type="submit"
+                  value="{{ 'single.register.title' | t }}"
+                  class="overlayButton single-collection-add-to-cart button add-to-cart-btn w-full btn btn-solid-primary-accent single-ignore"
+          >
+        </div>
+      {%- endform -%}
+    </div>
+    <div class="CANCEL_SIGNUP_LINK_CLASSES">
+      <div class="recover-links">
+        <span>
+          <a href="#" onclick="showLoginForm(event)" id="CancelRegister">{{ 'single.recover_password.cancel' | t }}</a>
+        </span>
+      </div>
+    </div>
+  </div>
+  {% comment %}
+    <!-- END #form-register -->
+  {% endcomment %}
+</section>
+
+<script type="text/javascript">
+  function isCaptchaEnabled() {
+    return !!window.Shopify.recaptchaV3;
+  }
+
+  function toggleForms(showFormId, hideFormIds) {
+    document.getElementById(showFormId).classList.remove('single-hidden');
+    hideFormIds.forEach((formId) => {
+      document.getElementById(formId).classList.add('single-hidden');
+    });
+  }
+
+  function showRegisterForm(event) {
+    if (event) event.preventDefault();
+    toggleForms('form-register', ['form-recover', 'form-login']);
+  }
+
+  function showLoginForm(event) {
+    if (event) event.preventDefault();
+    toggleForms('form-login', ['form-recover', 'form-register']);
+  }
+
+  function showRecoverForm(event) {
+    if (event) event.preventDefault();
+    toggleForms('form-recover', ['form-login', 'form-register']);
+  }
+
+  function getURLParameter(name) {
+    return (
+            decodeURIComponent(
+                    (new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(
+                            /\+/g,
+                            '%20'
+                    )
+            ) || null
+    );
+  }
+
+  function getRelativeUrl(url) {
+    try {
+      const parsedUrl = new URL(url);
+      const currentUrl = new URL(window.location.href);
+      if (parsedUrl.hostname === currentUrl.hostname) {
+        return parsedUrl.pathname + parsedUrl.search;
+      }
+      return url;
+    } catch (_) {
+      return url;
+    }
+  }
+
+  function getUrlOrDefault(url) {
+    if (!url || url === '') {
+      return getRelativeUrl(window.location.href);
+    }
+    return getRelativeUrl(url);
+  }
+
+  function setupForm(formId, url) {
+    const returnUrl = getUrlOrDefault(url);
+    const formElement = document.querySelector(formId);
+    formElement.querySelectorAll('[name="return_to"]').forEach((node) => (node.value = returnUrl));
+    if (isCaptchaEnabled()) {
+      return;
+    }
+    const cloneElement = formElement.cloneNode(true);
+    formElement.parentNode.replaceChild(cloneElement, formElement);
+
+    cloneElement.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const action = this.getAttribute('action');
+      const params = new FormData(this);
+      const request = new XMLHttpRequest();
+      request.open('POST', action, true);
+      request.onreadystatechange = () => {
+        if (request.readyState === 4) {
+          if (
+                  request.responseURL &&
+                  !request.responseURL.includes('/account/register') &&
+                  !request.responseURL.includes('/account/login') &&
+                  !request.responseURL.includes('/account/recover')
+          ) {
+            if (
+                    request.responseURL.includes('/challenge') ||
+                    request.responseURL === returnUrl ||
+                    request.responseURL.includes(returnUrl)
+            ) {
+              document.location.href = request.responseURL;
+              return;
+            }
+            const responseURL = new URL(request.responseURL);
+            if (request.responseURL.includes('/account') ||
+                    (window.location.hostname === responseURL.hostname && responseURL.pathname === '/')) {
+              document.location.href = returnUrl;
+              return;
+            }
+          }
+
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(request.responseText, 'text/html');
+          const formErrors = doc.querySelector('.errors')?.innerText;
+          const formMessageElements = doc.querySelectorAll('.form__message');
+          let formMessages = '';
+          if (!!formMessageElements) {
+            formMessages = [...formMessageElements]
+                    .map((element) => {
+                      const text = element.innerText;
+                      const listItems = element.parentNode.querySelectorAll('li');
+                      return (
+                              text +
+                              '<ul>' +
+                              [...listItems].map((li) => '<li>' + li.innerText + '</li>').reduce((a, b) => a + b, '')
+                      );
+                    })
+                    .reduce((a, b) => a + '<div>' + b + '</div>', '');
+          }
+          const errorsElement = document.querySelector(formId + ' .single-errors');
+
+          //if there are errors show them in the html form
+          if (!!formErrors && formErrors !== '' && formErrors !== 'undefined') {
+            errorsElement.innerHTML = formErrors;
+          } else if (!!formMessages && formMessages !== '' && formMessages !== 'undefined') {
+            errorsElement.innerHTML = formMessages;
+          } else {
+            errorsElement.innerHTML = 'An unknown error occurred. Please try again later.';
+            console.log('Unable to parse error messages from response: ', doc);
+          }
+        }
+      };
+      request.send(params);
+      return false;
+    });
+  }
+
+  function setupForms(registerUrl, loginUrl) {
+    setupForm('#create_customer', registerUrl);
+    setupForm('#customer_login', loginUrl);
+    setupForm('form[action="/account/recover"]', loginUrl);
+  }
+
+  function loginSetup() {
+    if (getURLParameter('show') === 'register') {
+      showRegisterForm();
+    }
+
+    const emailParam = getURLParameter('email');
+    const firstNameParam = getURLParameter('first_name');
+    const lastNameParam = getURLParameter('last_name');
+
+    if (emailParam) {
+      const emailField = document.getElementById('RegisterForm-email');
+      if (emailField) {
+        emailField.value = emailParam;
+      }
+    }
+
+    if (firstNameParam) {
+      const firstNameField = document.getElementById('RegisterForm-FirstName');
+      if (firstNameField) {
+        firstNameField.value = firstNameParam;
+      }
+    }
+
+    if (lastNameParam) {
+      const lastNameField = document.getElementById('RegisterForm-LastName');
+      if (lastNameField) {
+        lastNameField.value = lastNameParam;
+      }
+    }
+    setupForms('SIGNUP_REDIRECT_URL', 'LOGIN_REDIRECT_URL');
+  }
+
+  if (/complete|interactive|loaded/.test(document.readyState)) {
+    loginSetup();
+  } else {
+    window.addEventListener('DOMContentLoaded', loginSetup);
+  }
+</script>

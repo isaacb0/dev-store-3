@@ -1,0 +1,410 @@
+{% comment %}
+<!--
+Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+and its suppliers, if any. The intellectual and technical concepts contained herein are
+proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+patents in process, and are protected by trade secret or copyright law. Dissemination of this
+information or reproduction of this material is strictly forbidden unless prior
+written permission is obtained from Single Media, Inc.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+{% endcomment %}
+
+<script>
+  $(window).on("load", function () {
+    Shopify.AjaxifyCart = (function ($) {
+
+      const Config = {
+        labels: {
+          addToCart: 'Add to Cart',
+          added: 'Thank you!',
+          adding: 'Adding...',
+          soldOut: 'Sold Out',
+        },
+        selectors: {
+          cartCount: '.cart-count, #cart-count a:first, #gocart p a, #cart .checkout em, .item-count, #CartCount',
+          total: '#cart-price',
+          addToCartButton: '[type="submit"]',
+          addToCartForm: 'form[action="/cart/add"]',
+          currencies: '[name="currencies"]',
+          selectedCurrency: '#currencies span.selected'
+        },
+        uri: {
+          add: '/cart/add.js',
+          cart: '/cart.js',
+        },
+
+        feedbackPosition: 'nextButton',
+        feedbackTimeout: 3000,
+        {% if livestream %}
+      livestream: true,
+        livestreamId: '{{ livestream_id }}',
+          {% endif %}
+        {% if single_host %}
+    singleHost: '{{ single_host }}',
+      {% endif %}
+
+        currency: '{{ shop.currency }}',
+    moneyFormat: '{{ shop.money_format | remove: "'" | remove: '"' }}'
+      };
+
+  const _save = function (key, data, expireDate) {
+    const item = {
+      value: data,
+      expiresOn: expireDate,
+    };
+    localStorage.setItem(key, JSON.stringify(item));
+  };
+
+  const _load = function (key) {
+    const data = localStorage.getItem(key);
+    if (!data) {
+      return null;
+    }
+    const now = new Date();
+    const item = JSON.parse(data);
+    if (!!item.expiresOn && now.getTime() > item.expiresOn) {
+      localStorage.removeItem(key)
+      return null;
+    }
+    return item.value;
+  };
+
+  const _saveLivestreamId = function () {
+    if (!Config.livestreamId) {
+      return;
+    }
+    const data = {
+      livestreamId: Config.livestreamId,
+    };
+    const expiresOn = new Date().getTime() + (60000 * 60);
+    _save("singlemusic_livestream_id", data, expiresOn);
+  };
+
+  const _saveSingleHost = function () {
+    if (!Config.singleHost) {
+      return;
+    }
+    const data = {
+      singleHost: Config.singleHost
+    };
+    const expiresOn = new Date().getTime() + (60000 * 60 * 24);
+    _save("singlemusic_host", data, expiresOn);
+  };
+
+  const _loadLivestreamId = function () {
+    const livestreamData = _load("singlemusic_livestream_id");
+    if (!livestreamData || !livestreamData.livestreamId) {
+      return null;
+    }
+    return livestreamData.livestreamId;
+  };
+
+  const _loadSingleHost = function () {
+    const hostData = _load("singlemusic_host");
+    if (!hostData || !hostData.singleHost) {
+      return null;
+    }
+    return hostData.singleHost;
+  }
+
+  const _getProductId = function (form) {
+    return form.attr('id').split('product_form_')[1];
+  };
+
+  const _getProductVariantId = function (form) {
+    return form.find('[name="id"]').val();
+  };
+
+  const _showFeedback = function (success, html, cartForm) {
+    const productId = 'single-ajaxified-cart-feedback-' + _getProductId(cartForm);
+    $('#' + productId).remove();
+    const feedback =
+      '<div id = "' + productId +
+      '" class="single-ajaxified-cart-feedback ' + success + '">'
+      + html +
+      '</div>';
+    switch (Config.feedbackPosition) {
+      case 'aboveForm':
+        cartForm.before(feedback);
+        break;
+      case 'belowForm':
+        cartForm.after(feedback);
+        break;
+      case 'nextButton':
+      default:
+        cartForm.find(Config.selectors.addToCartButton)
+          .filter(function () {
+            return !$(this).attr('data-single-clone');
+          })
+          .after(feedback);
+        break;
+    }
+    $('.single-ajaxified-cart-feedback').slideDown();
+  };
+
+  const _setText = function ($button, label) {
+    if ($button.children().length) {
+      $button.children().each(function () {
+        if ($.trim($(this).text()) !== '') {
+          $(this).text(label);
+        }
+      });
+    } else {
+      $button.val(label).text(label);
+    }
+  };
+
+  const _getAddToCartButton = function (form) {
+    let button;
+    if (Config.livestream) {
+      button = form.children(Config.selectors.addToCartButton);
+    } else {
+      button = form.find(Config.selectors.addToCartButton);
+    }
+    button = button.filter(function () {
+      return !$(this).attr('data-single-clone');
+    });
+    return button
+  };
+
+  const _disableElement = function (element) {
+    element.addClass('disabled')
+      .prop('disabled', true);
+  };
+
+  const _enableElement = function (element) {
+    element.prop('disabled', false)
+      .removeClass('disabled')
+      .removeClass('single-hidden');
+  };
+
+  const _hideElement = function (element) {
+    element.addClass('single-hidden');
+  };
+
+  const _showElement = function (element) {
+    element.removeClass('single-hidden');
+  };
+
+  const _resetFeedback = function (addToCartButton, cartForm, itemData) {
+    _enableElement(addToCartButton);
+    _hideElement($('#single-ajaxified-cart-feedback-' + _getProductId(cartForm)));
+    _showElement($('#single-variant-select-' + itemData.product_id));
+    _setText(addToCartButton, Config.labels.addToCart);
+  };
+
+  const _showCartFeedback = function (cart) {
+    if (Config.selectors.cartCount && $(Config.selectors.cartCount).size()) {
+      const value = $(Config.selectors.cartCount).html() || '0';
+      $(Config.selectors.cartCount).html(value.replace(/[0-9]+/, cart.item_count)).removeClass('hidden-count');
+    }
+    if (Config.selectors.total && $(Config.selectors.total).size()) {
+      if (typeof Currency !== 'undefined' && typeof Currency.moneyFormats !== 'undefined') {
+        var currency = '';
+        if ($(Config.selectors.currencies).size()) {
+          currency = $(Config.selectors.currencies).val();
+        } else if ($(Config.selectors.selectedCurrency).size()) {
+          currency = $(Config.selectors.selectedCurrency).attr('data-currency');
+        }
+        if (currency) {
+          $(Config.selectors.total).html(
+            '<span class=money>'
+            + Shopify.formatMoney(
+              Currency.convert(cart.total_price, Config.currency, currency),
+              Currency.money_format[currency])
+            + '</span>');
+        } else {
+          $(Config.selectors.total).html(Shopify.formatMoney(cart.total_price, Config.moneyFormat));
+        }
+      } else {
+        $(Config.selectors.total).html(Shopify.formatMoney(cart.total_price, Config.moneyFormat));
+      }
+    }
+  };
+
+  const _getAddedFeedbackHtml = function () {
+    if (Config.livestream) {
+      return '<button class="btn btn--secondary-accent button button--secondary" disabled><i class="material-icons">check</i> Added to cart!</a>';
+    }
+    return '<button class="btn btn--secondary-accent button button--secondary" disabled><i class="material-icons">check</i> Added to cart!</a>'
+  };
+
+  const _addToCartSuccess = function (itemData, addToCartButton, cartForm) {
+    try {
+      document.body.dispatchEvent(new CustomEvent('label:modalcart:afteradditem'));
+      document.body.dispatchEvent(new CustomEvent('cart:open'));
+      document.dispatchEvent(new CustomEvent('cart:build' , {bubbles: true}));
+      document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: itemData }));
+      const cartLink = document.querySelector('.cart-link');
+      if (cartLink) {
+        cartLink.click();
+      }
+      const cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+      if (cart) {
+        cart.renderContents(itemData);
+      }
+    } catch(error) {
+        console.warn(error);
+    }
+    _hideElement(addToCartButton);
+    _hideElement($('#single-variant-select-' + itemData.product_id));
+    _setText(addToCartButton, Config.labels.added);
+    _showFeedback(
+      'success',
+      _getAddedFeedbackHtml(),
+      cartForm);
+
+    window.setTimeout(() => _resetFeedback(addToCartButton, cartForm, itemData), Config.feedbackTimeout);
+
+    // Update cart count and show cart link.
+    $.getJSON(Config.uri.cart, _showCartFeedback);
+  };
+
+  const _addToCartError = function (response, addToCartButton, cartForm) {
+    response = response.description;
+    if (response.slice(0, 4) === 'All ') {
+      _showFeedback('error', response.replace('All 1 ', 'All '), cartForm);
+      addToCartButton.prop('disabled', false);
+      _setText(addToCartButton, Config.labels.soldOut);
+      addToCartButton.prop('disabled', true);
+    } else {
+      _showFeedback('error', '<i class="fa fa-warning"></i> ' + response, cartForm);
+      _enableElement(addToCartButton);
+      _setText(addToCartButton, Config.labels.addToCart);
+    }
+  };
+
+  const _toAddRequest = function (cartForm, livestreamId) {
+    let item = {
+      id: _getProductVariantId(cartForm),
+      quantity: 1,
+    };
+    if (livestreamId) {
+      const properties = {};
+      properties['__livestream_id__' + livestreamId] = '';
+      item = Object.assign(item, {
+        properties: properties
+      });
+    }
+    return {
+      items: [
+        item
+      ]
+    };
+  };
+
+  const _isMerchTableProduct = function (productId, livestreamId) {
+    const singleHost = _loadSingleHost();
+    if (!singleHost) {
+      return Promise.resolve({ found: false });
+    }
+    if (Config.livestream) {
+      return Promise.resolve({ found: true });
+    }
+    if (!livestreamId) {
+      return Promise.resolve({ found: false });
+    }
+    const url = ['/apps', 'single', 'v1', 'external', 'merch-table', 'search'].join("/");
+    return fetch(url, {
+      method: 'POST',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        productId: productId.toString(),
+        livestreamId: livestreamId
+      }),
+    });
+  };
+
+  const _addItemToCart = function (cartForm, livestreamId) {
+    const request = _toAddRequest(cartForm, livestreamId);
+    return fetch(Config.uri.add, {
+      method: 'POST',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(request),
+    });
+  };
+
+  const _init = function () {
+    $(document).ready(function () {
+      // register add to cart function
+      $(Config.selectors.addToCartForm).submit(function (e) {
+        e.preventDefault();
+        const cartForm = $(this);
+        const addToCartButton = _getAddToCartButton(cartForm);
+        _setText(addToCartButton, Config.labels.adding);
+        _disableElement(addToCartButton);
+        const productId = _getProductId(cartForm);
+        const livestreamId = _loadLivestreamId();
+        _isMerchTableProduct(productId, livestreamId)
+          .then(response => {
+            if (response.found !== undefined) {
+              return _addItemToCart(cartForm, response.found ? livestreamId : null);
+            } else if (!response.ok) {
+              return _addItemToCart(cartForm, null);
+            } else {
+              return response.json()
+                .then((resp) => {
+                  const found = !!resp && resp.found;
+                  return _addItemToCart(cartForm, found ? livestreamId : null);
+                });
+            }
+          })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+            return Promise.reject(response);
+          })
+          .then(response => _addToCartSuccess(response, addToCartButton, cartForm))
+          .catch(response => {
+            return response.json()
+              .then(resp => _addToCartError(resp, addToCartButton, cartForm));
+          });
+        return false;
+      });
+      // store livestream ID
+      _saveLivestreamId();
+      _saveSingleHost();
+    });
+  };
+  return {
+    init: function (params) {
+      // Configuration
+      params = params || {};
+      // Merging with defaults.
+      $.extend(Config, params);
+      // Action
+      $(function () {
+        _init();
+      });
+    },
+    getConfig: function () {
+      return Config;
+    }
+  }
+    }) (jQuery);
+
+  Shopify.AjaxifyCart.init();
+
+  });
+</script>

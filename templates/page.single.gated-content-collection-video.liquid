@@ -1,0 +1,79 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single, LLC - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single, LLC
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single, LLC and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single, LLC.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% comment %}
+  <!-- Single App Default Styles -->
+{% endcomment %}
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-gated-content.css' | asset_url | stylesheet_tag }}
+{{ 'single-video-bar.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .single-card-video {
+    width: 100% !important;
+  }
+
+  .single-header-bar {
+    margin-top: 0;
+  }
+</style>
+
+<div class="single-grid" style="margin-bottom: 5em;">
+  <section class="single-grid-item">
+    <div class="single-col col-1_1">
+      <h2 class="title {{ title_size }}" style="margin-bottom: 0;">{{ section_title }}</h2>
+      {% if section_description %}
+        <div class="video-collection-title" style="margin-left: 0;">{{ section_description }}</div>
+      {% endif %}
+    </div>
+    <div class="single-col col-1_1">
+      <div class="single-header-bar">
+        <!-- Search Bar -->
+        {% capture search_bar %}{% section 'single-gated-search-bar' %}{% endcapture %}
+        {% assign search_bar = search_bar | replace: 'CONTENT_QUERY', content_query %}
+        {{ search_bar }}
+      </div>
+    </div>
+    <div class="single-col col-1_1 single-gate-loading" style="margin: 4em 0;" hidden>
+      <single-spinner></single-spinner>
+    </div>
+  </section>
+  <section class="single-grid-item single-hidden-while-loading" style="padding-bottom: 4em;">
+    {% if video_ids.size > 0 %}
+      {% for video_input in video_ids %}
+        <div class="single-col col-1_{{ column_count }}">
+          {% render 'single-video-card',
+            video_input: video_input,
+            show_title: show_title,
+            show_date: show_date,
+            show_artist: show_artist,
+            show_badge: show_badge,
+            badge_text: badge_text
+          %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="single-col col-4_4">
+        {% section 'single-gated-no-results' %}
+      </div>
+    {% endif %}
+  </section>
+</div>

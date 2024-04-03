@@ -1,0 +1,7 @@
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-gated-content.css' | asset_url | stylesheet_tag }}
+
+{% include 'single-customer-storage' %}
+<div class="single-gated-page">
+  <single-content-gating></single-content-gating>
+</div>

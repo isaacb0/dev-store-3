@@ -1,0 +1,121 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single, LLC - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single, LLC
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single, LLC and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single, LLC.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% comment %}
+  <!-- Single Default Styles - Can be edited in assets/single-v3.scss.liquid -->
+{% endcomment %}
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+
+{% comment %}
+  <!-- jQuery -->
+{% endcomment %}
+{{ '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js' | script_tag }}
+
+<div class="single-grid single-product" itemscope itemtype="http://schema.org/Product">
+  <div class="single-grid-item">
+    <!-- Product Metatags -->
+    <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+    <meta itemprop="image" content="{{ featured_image }}">
+    <meta property="og:title" content="{{ product.title }}">
+    <meta property="og:image" content="{{ featured_image }}">
+    <meta property="og:url" content="{{ shop.url }}{{ product.url }}">
+
+    <!-- Left Column -->
+    <div class="single-col col-2_4">
+      <div class="single-product-image">
+        <img src="{{ product.featured_image.src | img_url: 'grande' }}" alt="{{ featured_img_alt }}">
+      </div>
+    </div>
+    <!-- End Left Column -->
+
+    <!-- Right Column -->
+    <div class="single-col col-2_4">
+      <!-- Begin Single Header -->
+      <div class="single-product-header">
+        <h1 class="single-product-title" itemprop="name">
+          <span>{{ product.title }}</span>
+        </h1>
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+        {% render 'single-nft-progress-bar', product: product %}
+        <!-- Add to Cart -->
+        {% form 'product', product %}
+          {% if product.variants.size > 1 %}
+            <div class="product-form__input">
+              <div class="select single-select-wrap">
+                <select id="variant-select" name="id" class="select__select single-select">
+                  {% assign variants = product.variants | sort: 'price' %}
+                  {% for variant in variants %}
+                    {% if variant.available %}
+                      <option value="{{variant.id}}">{{ variant.title }} - {{ variant.price | money }}</option>
+                    {% else %}
+                      <option disabled="disabled">{{ variant.title }} - {{ 'products.product.sold_out' | t }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                {% render 'single-icon-caret' %}
+              </div>
+            </div>
+          {% else %}
+            {% assign variant = product.variants.first %}
+            <h3 class="single-product-variant-title">
+              {{ variant.title }} • {{ variant.price | money_with_currency }}
+            </h3>
+            <input id="variant-select" name="id" value="{{ variant.id }}" type="hidden">
+          {% endif %}
+          {% if product.selling_plan_groups %}
+            <input type="hidden" id="sellingPlan" name="selling_plan">
+          {% endif %}
+          <div class="single-product-add-to-cart-btns">
+            {% if product.available != true %}
+              <button class="btn button button--full-width button--secondary" disabled>
+                {{ 'products.product.sold_out' | t }}
+              </button>
+            {% else %}
+              <button type="submit" name="add" id="AddToCart" class="btn button button--full-width button--secondary">
+                <span id="AddToCartText">{% render 'single-add-to-cart' %}</span>
+              </button>
+            {% endif %}
+          </div>
+        {% endform %}
+        <p class="single-product-description">{{ product.description }}</p>
+      </div>
+      <!-- End Single Header -->
+    </div>
+    <!-- End Right Column -->
+  </div>
+  <!-- End Inner Wrap -->
+</div>
+<!-- End Product Wrap -->
+
+<script type="text/javascript">
+  const product = {{ product | json }};
+  const variantSelect = document.getElementById('variant-select');
+  const spSelect = document.getElementById('sellingPlan');
+  variantSelect.addEventListener('change', populateSellingPlan);
+  $(document).ready(populateSellingPlan);
+
+  function populateSellingPlan() {
+      const variant = product.variants.find(v => v.id.toString() === variantSelect.value);
+      if (!!variant && !!variant.selling_plan_allocations && variant.selling_plan_allocations.length > 0) {
+          spSelect.value = variant.selling_plan_allocations[0].selling_plan_id;
+      }
+  }
+</script>

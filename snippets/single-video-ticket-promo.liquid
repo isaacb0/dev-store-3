@@ -1,0 +1,107 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% assign page_handle = page.handle %}
+{% assign livestream_id = pages[page_handle].metafields.single_livestream.livestream_id %}
+
+<section class="single-grid-item single-collection">
+  {% paginate collections.all.products by 1000 %}
+    {% for product in collections.all.products %}
+      {% for variant in product.variants %}
+        {% if variant.metafields.single_livestream.livestream_id contains livestream_id %}
+          <div class="single-collection-product single-col col-1_3">
+            <a
+              href="{{ product.url }}"
+              target="_blank"
+            >
+              <div class="single-collection-product-img-wrap">
+                <img
+                  class="single-collection-product-img"
+                  src="{{ product.featured_image | img_url: '640x640' }}"
+                  alt="{{ product.featured_image.alt }}"
+                  loading="lazy"
+                >
+              </div>
+              <h4 class="single-collection-product-title">{{ product.title }}</h4>
+              <p
+                class="single-collection-product-price"
+                id="single-product-price-{{product.id}}"
+              >
+                {{ product.variants.first.price | money }}
+              </p>
+            </a>
+            <form
+              action="/cart/add"
+              method="post"
+              enctype="multipart/form-data"
+              id="product_form_{{product.id}}"
+            >
+              {% if product.variants.size > 1 %}
+                <select
+                  name="id"
+                  class="single-select"
+                  id="single-select-{{product.id}}"
+                  onchange="setPrice(this.options[this.selectedIndex]);"
+                >
+                  {% for variant in product.variants %}
+                    {% if variant.available == true %}
+                      <option
+                        value="{{variant.id}}"
+                        data-price="{{variant.price | money }}"
+                        data-product-id="{{product.id}}"
+                      >
+                        {{ variant.title }}
+                      </option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input
+                  type="hidden"
+                  name="id"
+                  value="{{ product.variants.first.id }}"
+                >
+              {% endif %}
+              <input
+                type="submit"
+                name="add"
+                id="add"
+                value="{% render 'single-add-to-cart' %}"
+                class="single-align-center button btn"
+              >
+            </form>
+          </div>
+          {% break %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endpaginate %}
+</section>
+
+<script>
+  window.SINGLE_LIVESTREAM = true;
+  /* Update Variant Price */
+  setPrice = function (selectedItem) {
+    const price = selectedItem.attributes['data-price'].value;
+    const productId = selectedItem.attributes['data-product-id'].value;
+    document.getElementById('single-product-price-' + productId).innerHTML = price;
+  };
+</script>

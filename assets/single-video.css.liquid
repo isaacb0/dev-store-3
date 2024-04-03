@@ -1,0 +1,131 @@
+/*
+Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED 
+
+NOTICE:  All information contained herein is, and remains the property of Single Media,
+Inc and its suppliers, if any. The intellectual and technical concepts contained herein are 
+proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents, 
+patents in process, and are protected by trade secret or copyright law. Dissemination of this 
+information or reproduction of this material is strictly forbidden unless prior 
+written permission is obtained from Single Media, Inc.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+.single-access-denied {
+  padding-top: 3em;
+  padding-bottom: 3em;
+  text-align: center;
+}
+
+.single-video-wrap {
+  max-height: 75vh;
+  overflow: hidden;
+}
+
+.single-video-player {
+  position: relative;
+  max-width: 100%;
+  padding: 45% 0 0;
+  background-color: #000000;
+}
+
+.single-video-player.chat-disabled {
+  padding-top: 56.25%;
+}
+
+/* iframe */
+.single-player {
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  text-transform: none;
+  line-height: 1.5;
+  max-height: 75vh;
+}
+
+/* LG */
+@media screen and (max-width: 1200px) {
+  .single-video-player {
+    padding-top: 42.2%;
+  }
+}
+
+/* MD & SM */
+@media screen and (max-width: 960px) {
+  .single-video-wrap,
+  .single-video,
+  .single-player {
+    max-height: 100% !important;
+  }
+
+  .single-video-player {
+    padding-top: calc(56.25% + 335px);
+  }
+}
+
+/** Video Info **/
+.single-video-title,
+.single-video-artist {
+  margin: 1em 0 0.5em;
+}
+
+/** Promoted Products **/
+.single-collection {
+  margin: 2em auto;
+  justify-content: center;
+}
+
+.single-collection-product {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2em;
+  padding: 1em;
+  gap: 0;
+}
+
+.single-collection-product-link,
+.single-collection-product-form {
+  width: 100%;
+}
+
+.single-collection-product-link {
+  flex-grow: 1;
+}
+
+.single-collection-product-img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  margin-bottom: 1em;
+}
+
+.single-collection-product-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition: transform 0.2s linear 0s;
+}
+
+.single-collection-product-img:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s linear 0s;
+}
+
+.single-collection-product-price {
+  margin: 0 0 1em;
+}
+
+.single-collection-add-to-cart {
+  width: 100%;
+}

@@ -1,0 +1,167 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single Media, Inc - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single Media, Inc
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single Media, Inc and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single Media, Inc.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% comment %}
+  <!-- Single App Styles -->
+{% endcomment %}
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-video.css' | asset_url | stylesheet_tag }}
+
+{% comment %}
+  <!-- jQuery -->
+{% endcomment %}
+{{ '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js' | script_tag }}
+
+{% assign page_handle = page.handle %}
+{% assign livestream_id = pages[page_handle].metafields.single_livestream.livestream_id %}
+{% assign livestream_host = pages[page_handle].metafields.single_livestream.livestream_host %}
+{% assign single_host = pages[page_handle].metafields.single_livestream.single_host %}
+{% assign support_link = pages[page_handle].metafields.single_livestream.support_link %}
+{% assign faq_link = pages[page_handle].metafields.single_livestream.faq_link %}
+{% assign token = pages[page_handle].metafields.single_livestream.bypass_token %}
+{% assign chat_enabled = pages[page_handle].metafields.single_livestream.chat_enabled %}
+{% assign collection_handle = pages[page_handle].metafields.single_livestream.collection_handle %}
+{% assign customer_tag = pages[page_handle].metafields.single_livestream.customer_tag %}
+{% assign column_count = '4' %}
+{% assign global_tag = 'has-ticket' %}
+{% assign video_product_type = pages[page_handle].metafields.single_livestream.video_product_type %}
+{% assign today_date = 'now' | date: '%s' | plus: 0 %}
+{%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
+{%- assign pageUrl = contentForQuerystring
+  | split: '"pageurl":"'
+  | last
+  | split: '"'
+  | first
+  | split: '.myshopify.com'
+  | last
+  | replace: '\/', '/'
+  | replace: '%20', ' '
+  | replace: '\u0026', '&'
+-%}
+{%- for i in (1..1) -%}
+  {%- unless pageUrl contains '?' -%}{% break %}{%- endunless -%}
+  {%- assign pageQuerystring = pageUrl | split: '?' | last -%}
+  {%- assign parts = pageQuerystring | split: '&' -%}
+  {%- for part in parts -%}
+    {%- assign param_list = part | split: '=' -%}
+    {%- if param_list.size > 1 and param_list contains 'soundcheck' and param_list contains 'true' %}
+      {% assign soundcheck = true %}
+    {% endif %}
+  {%- endfor -%}
+{%- endfor -%}
+{% if request.path contains token %}
+  {% assign bypass_token_used = true %}
+{% endif %}
+{% if request.host contains 'shopifypreview.com' %}
+  {% assign shopify_preview_host = true %}
+{% endif %}
+{% unless customer or bypass_token_used or shopify_preview_host %}
+  {% if template contains 'customers' %}
+    {% assign send_to_login = false %}
+  {% else %}
+    {% assign send_to_login = true %}
+  {% endif %}
+{% endunless %}
+{% if send_to_login and request.path != '/challenge' %}
+  {% capture login_section %}
+    {% section 'single-base-login' %}
+    {% render 'single-video-ticket-promo' %}
+  {% endcapture %}
+  {{ login_section | replace: 'LOGIN_REDIRECT_URL', page.url | replace: 'SIGNUP_REDIRECT_URL', page.url | replace: 'REGISTER_CLASSES', 'single-hidden' |  replace: 'LOGIN_TITLE', 'Login' }}
+{% else %}
+  {% if customer.tags contains customer_tag
+    or customer.tags contains global_tag
+    or bypass_token_used
+    or shopify_preview_host
+  %}
+    {% assign has_ticket = true %}
+    {% assign purchase_date = today_date %}
+  {% endif %}
+  {% for order in customer.orders %}
+    {% unless order.cancelled or order.financial_status == 'refunded' %}
+      {% for line_item in order.line_items %}
+        {% if line_item.variant.metafields.single_livestream.livestream_id contains livestream_id %}
+          {% assign has_ticket = true %}
+          {% assign purchase_date = order.created_at | date: '%s' | plus: 0 %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+    {% endunless %}
+  {% endfor %}
+  {% if customer.tags contains 'no-ticket' %}
+    {% assign has_ticket = false %}
+  {% endif %}
+  {% if has_ticket %}
+    {% comment %}
+      <!-- Video Player -->
+    {% endcomment %}
+    <div class="single-video-wrap">
+      <div
+        id="single-livestream-player"
+        class="single-video-player {% if chat_enabled == 'false' %}chat-disabled{% endif %}"
+      >
+        <script
+          src="https://{{ livestream_host }}/assets/livestream-embed.js?id={{ livestream_id }}&customerEmail={{ customer.email }}{% if bypass_token_used %}&token={{ token }}{% endif %}{% if soundcheck %}&soundcheck=true{% endif %}{% unless shop.metafields.single_inc.whitelabel_enabled.value == true %}&watermark=true{% endunless %}"
+          type="text/javascript"
+        ></script>
+      </div>
+      {% render 'single-chat-modal', background_color: 'rgba(255,255,255,0.9)', font_color: '#000000' %}
+    </div>
+    {% comment %}
+      <!-- Page Body Content -->
+    {% endcomment %}
+    {% if page.content %}
+      <div class="single-grid-item">
+        {{ page.content }}
+      </div>
+    {% endif %}
+    {% comment %}
+      <!-- Promoted Products -->
+    {% endcomment %}
+    {% if collections[collection_handle].products %}
+      {% render 'single-video-promoted-products',
+        collection_handle: collection_handle,
+        video_id: livestream_id,
+        title_size: 'h5',
+        column_count: column_count
+      %}
+    {% endif %}
+    {% assign livestream = true %}
+    {% include 'single-base-ajaxify' with livestream, livestream_id, single_host %}
+    <script>
+      window.SINGLE_LIVESTREAM = true;
+      /* Open Links Externally */
+      $('a').attr('target', '_blank');
+      /* Update Variant Price */
+      setPrice = function (selectedItem) {
+        const price = selectedItem.attributes['data-price'].value;
+        const productId = selectedItem.attributes['data-product-id'].value;
+        document.getElementById('single-product-price-' + productId).innerHTML = price;
+      };
+    </script>
+  {% endif %}
+  {% if has_ticket != true %}
+    {% section 'single-video-no-ticket' %}
+  {% endif %}
+  {% if content_expired and has_ticket %}
+    {% section 'single-video-content-expired' %}
+  {% endif %}
+{% endif %}

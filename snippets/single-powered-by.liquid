@@ -1,0 +1,28 @@
+{% unless shop.metafields.single_inc.whitelabel_enabled.value == true %}
+    <style>
+        .single-brand-row {
+            display: table;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            width: 100%;
+            position: relative;
+            margin: 0 auto;
+            padding: 0 5rem 1rem;
+            max-width: var(--page-width);
+        }
+
+        .single-brand {
+            padding: 0 1em !important;
+        }
+
+        .small-text {
+            color: #737373;
+            font-size: 12px;
+        }
+    </style>
+
+    <single-order-status-powered-by class="single-brand-row"
+                                    link-url="https://single.xyz"
+                                    image-url="{{ 'single-logo-black.png' | asset_url }}"
+    ></single-order-status-powered-by>
+{% endunless %}

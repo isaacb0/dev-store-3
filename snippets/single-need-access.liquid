@@ -1,0 +1,28 @@
+{% if key_product_ids.size > 0 or key_product_listings.size > 0 %}
+  <div class="single-grid-item key-products {% if max_width == 'true' %}page-width{% endif %}">
+    <div class="single-col col-4_4 text-center">
+      {% if title %}
+        <h2 class="title {{ title_size }}">{{ title }}</h2>
+      {% else %}
+        <h2 style="margin: 0;" class="title {{ title_size }}">{% section 'single-gated-need-access' %}</h2>
+      {% endif %}
+      {% if section_description %}
+        <div class="description">{{ section_description }}</div>
+      {% endif %}
+    </div>
+    {% for key_product in key_product_ids %}
+      <div class="single-col col-1_{{ column_count }}">
+        {% assign product_parts = key_product | split: '|' %}
+        {% render 'single-product-card', product_input: product_parts[0], required_amount: product_parts[1],
+                show_title: 'true',
+                show_description: 'true',
+                show_badge: 'true' %}
+      </div>
+    {% endfor %}
+    {% for product_listing in key_product_listings %}
+      <div class="single-col col-1_{{ column_count }}">
+        {% render 'single-listing-card', product_listing: product_listing %}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

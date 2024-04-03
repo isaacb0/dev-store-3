@@ -1,0 +1,110 @@
+{% comment %}
+  <!--
+  Copyright (c) 2022 Single, LLC - ALL RIGHTS RESERVED
+
+  NOTICE:  All information contained herein is, and remains the property of Single, LLC
+  and its suppliers, if any. The intellectual and technical concepts contained herein are
+  proprietary to Single, LLC and its suppliers and may be covered by U.S. and Foreign Patents,
+  patents in process, and are protected by trade secret or copyright law. Dissemination of this
+  information or reproduction of this material is strictly forbidden unless prior
+  written permission is obtained from Single, LLC.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -->
+{% endcomment %}
+
+{% comment %}
+  <!-- Single App Default Styles -->
+{% endcomment %}
+{{ 'single-base.css' | asset_url | stylesheet_tag }}
+{{ 'single-gated-content.css' | asset_url | stylesheet_tag }}
+
+{% unless product_ids.size > 0 or product_hidden_count or video_ids.size > 0 or video_hidden_count %}
+  {% if no_items_title %}
+      <div class="single-grid">
+        <div class="single-grid-item">
+          <div class="single-col col-4_4 text-center {{ row_title_size }}" style="margin: 5em 0;">
+            {{ no_items_title }}
+          </div>
+        </div>
+      </div>
+  {% endif %}
+{% else %}
+    <div class="single-grid">
+      {% if title %}
+        <div class="single-grid-item">
+          <div class="single-col col-4_4 {{ title_size }}">
+            {{ title }}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if key_product_id and show_key_product == 'true' %}
+        <div class="single-grid-item">
+          <div class="single-col col-{{ product_column_width }}_{{ column_count }}">
+            {% render 'single-product-card', product_input: key_product_id,
+                    show_title: product_show_title,
+                    show_description: product_show_description,
+                    show_badge: product_show_badge %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if product_ids.size > 0 or product_hidden_count %}
+        <div class="single-grid-item">
+          <div class="single-col col-4_4 {{ row_title_size }}">{{ product_title }}</div>
+          {% for product_input in product_ids %}
+            <div class="single-col col-{{ product_column_width }}_{{ column_count }}">
+              {% render 'single-product-card', product_input: product_input,
+                      show_title: product_show_title,
+                      show_description: product_show_description,
+                      show_badge: product_show_badge %}
+            </div>
+          {% endfor %}
+          {% if product_hidden_count %}
+            <div class="single-col col-{{ product_column_width }}_{{ column_count }}">
+              {% render 'single-lock-card',
+                      count: product_hidden_count,
+                      denial_reason: product_denial_reason,
+                      key_acquisition_url: product_key_acquisition_url,
+                      login_types: login_types
+              %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if video_ids.size > 0 or video_hidden_count %}
+        <div class="single-grid-item">
+          <div class="single-col col-4_4 {{ row_title_size }}">{{ video_title }}</div>
+          {% for video_input in video_ids %}
+            <div class="single-col col-{{ video_column_width }}_{{ column_count }}">
+              {% render 'single-video-card',
+                      video_input: video_input,
+                      show_title: video_show_title,
+                      show_date: video_show_date,
+                      show_artist: video_show_artist,
+                      show_badge: 'false'
+              %}
+            </div>
+          {% endfor %}
+          {% if video_hidden_count %}
+            <div class="single-col col-{{ video_column_width }}_{{ column_count }}">
+              {% render 'single-lock-card',
+                      count: video_hidden_count,
+                      denial_reason: video_denial_reason,
+                      key_acquisition_url: video_key_acquisition_url,
+                      login_types: login_types
+              %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+{% endunless %}

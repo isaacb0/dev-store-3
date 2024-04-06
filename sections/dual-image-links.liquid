@@ -1,0 +1,95 @@
+<style>
+.dual-images-container {
+  display: flex;
+  width: 100%;
+  height: 40vh; /* Adjust as needed */
+  gap: 10px; /* Creates space between the images */
+}
+
+.image-wrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0); 
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.image-wrapper p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  z-index: 2;
+  margin: 0;
+  text-decoration: underline;
+}
+
+.image-wrapper:hover p {
+    text-decoration: none;
+} 
+
+</style>
+
+
+<div class="page-width">
+  <div class="dual-images-container">
+    {% for block in section.blocks %}
+    <div class="image-wrapper">
+      <a href="{{ block.settings.image_link }}" target="_blank">
+        <img src="{{ block.settings.image | img_url: '600x' }}" alt="{{ block.settings.image.alt | escape }}">
+        <p>{{ block.settings.text_overlay }}</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Dual Image Links",
+  "class": "index-section",
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "text_overlay",
+          "label": "Text Overlay"
+        },
+        {
+          "type": "url",
+          "id": "image_link",
+          "label": "Image Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Default Dual Images",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

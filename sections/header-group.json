@@ -8,7 +8,8 @@
         "header-0": {
           "type": "logo",
           "settings": {
-            "desktop_logo_width": 140,
+            "logo": "shopify:\/\/shop_images\/lane-8-logo-removebg-preview.png",
+            "desktop_logo_width": 180,
             "mobile_logo_width": 110
           }
         }
@@ -24,7 +25,7 @@
         "hover_menu": true,
         "mega_menu_images": true,
         "main_menu_alignment": "left-center",
-        "header_style": "normal",
+        "header_style": "sticky",
         "sticky_index": false,
         "sticky_collection": false,
         "toolbar_menu": "",
@@ -36,28 +37,6 @@
     },
     "announcement": {
       "type": "announcement",
-      "blocks": {
-        "announcement-0": {
-          "type": "announcement",
-          "settings": {
-            "text": "Free shipping",
-            "link_text": "On all orders over $100",
-            "link": ""
-          }
-        },
-        "announcement-1": {
-          "type": "announcement",
-          "settings": {
-            "text": "Hassle-free returns",
-            "link_text": "30-day postage paid returns",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "announcement-0",
-        "announcement-1"
-      ],
       "disabled": true,
       "settings": {
         "announcement_compact": true

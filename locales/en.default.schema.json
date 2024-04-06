@@ -3561,6 +3561,14 @@
           "label": "Vimeo",
           "info": "https://vimeo.com/shopify"
         },
+        "social_apple_link": {
+          "label": "Apple",
+          "info": "https://applemusic.com/shopify"
+        },
+        "social_spotify_link": {
+          "label": "Spotify",
+          "info": "https://spotify.com/shopify"
+        },
         "header_sharing_options": "Sharing options",
         "share_facebook": {
           "label": "Share on Facebook"

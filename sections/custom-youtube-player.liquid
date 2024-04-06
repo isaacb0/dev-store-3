@@ -1,0 +1,75 @@
+<style>
+  /* .page-width {
+    height: 130vh;
+  } */
+  
+  .video-wrapper {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  width: 80%; 
+  position: relative;
+  margin: 20px auto; 
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0);
+  overflow: hidden;
+}
+
+
+.video-wrapper iframe {
+  position: absolute;
+  width: 100%; /* Fill the width of the wrapper */
+  height: 100%; /* Fill the height of the wrapper */
+}
+
+</style>
+
+{%- if section.settings.divider -%}
+<div class="section--divider"></div>
+{%- endif -%}
+
+<div class="page-width">
+  {%- if section.settings.title != blank -%}
+    <div class="section-header">
+      <h2>{{ section.settings.title }}</h2>
+    </div>
+  {%- endif -%}
+  <div class="video-wrapper">
+    {% if section.settings.youtube_url != blank %}
+      {% assign youtube_id = section.settings.youtube_url | split: '=' | last %}
+      <iframe src="https://www.youtube.com/embed/{{ youtube_id }}?autoplay=1&mute=1&playlist={{ youtube_id }}&loop=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom YouTube Player",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Header",
+      "default": "Custom YouTube Player"
+    },
+    {
+      "type": "text",
+      "id": "youtube_url",
+      "label": "YouTube Video URL",
+      "default": "https://www.youtube.com/watch?v="
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "Show Divider",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom YouTube Player"
+    }
+  ]
+}
+{% endschema %}

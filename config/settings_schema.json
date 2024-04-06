@@ -888,6 +888,18 @@
       },
       {
         "type": "text",
+        "id": "social_apple_link",
+        "label": "t:settings_schema.social_media.settings.social_apple_link.label",
+        "info": "t:settings_schema.social_media.settings.social_apple_link.info"
+      },
+      {
+        "type": "text",
+        "id": "social_spotify_link",
+        "label": "t:settings_schema.social_media.settings.social_spotify_link.label",
+        "info": "t:settings_schema.social_media.settings.social_spotify_link.info"
+      },
+      {
+        "type": "text",
         "id": "social_twitter_link",
         "label": "t:settings_schema.social_media.settings.social_twitter_link.label",
         "info": "t:settings_schema.social_media.settings.social_twitter_link.info"

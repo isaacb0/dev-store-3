@@ -65,7 +65,7 @@
 
   {%- if settings.color_header == settings.color_body_bg or settings.color_body_bg contains settings.color_header -%}
     .site-header {
-      box-shadow: 0 0 1px rgba(0,0,0,0.2);
+      box-shadow: 0 0 80px rgba(0,0,0, .6);
     }
 
     .toolbar + .header-sticky-wrapper .site-header {
@@ -76,6 +76,12 @@
   background-image: url('{{ 'side-flowers.png' | asset_url }}');
   background-repeat: no-repeat;
   background-position: center;
+  height: 280px;
+  }
+  @media only screen and (max-width: 768px){
+    .site-header {
+      height: auto;
+    }
   }
 </style>
 

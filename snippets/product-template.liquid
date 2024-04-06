@@ -182,9 +182,9 @@
                     <div class="product-block product-block--price" {{ block.shopify_attributes }}>
                       {%- assign hide_sale_price = true -%}
                       {%- if product.compare_at_price_max > product.price -%}
-                        {%- if current_variant.compare_at_price > current_variant.price -%}
+                        {% comment %} {%- if current_variant.compare_at_price > current_variant.price -%}
                           {%- assign hide_sale_price = false -%}
-                        {%- endif -%}
+                        {%- endif -%} {% endcomment %}
                         <span
                           data-a11y-price
                           class="visually-hidden"

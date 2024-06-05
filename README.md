@@ -1,2 +1,2 @@
 # dev-store-3
-Shopify custom theme using "Impulse'
+Shopify custom theme using "Impulse"
